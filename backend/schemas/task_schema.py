@@ -10,8 +10,9 @@ class TaskIn(BaseModel):
 class TaskOut(BaseModel):
     id: int
     title: str
-    description: str
+    description: Optional[str] = None
     due_date: Optional[date] = None
+    priority: Optional[str] = None
     completed: bool
     
 class TaskUpdate(BaseModel):

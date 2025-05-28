@@ -28,7 +28,7 @@ app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY"))
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=os.getenv("FRONTEND_URL"),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -41,18 +41,6 @@ app.include_router(tasks_router, tags=["Tasks"])
 app.include_router(ai_router, tags=["AI"])
 
 
-
-
-@app.get("/me")
-async def me(request: Request):
-    user = request.session.get("user")
-    if not user:
-        raise HTTPException(status_code=401, detail="Not logged in")
-    ai_usage = request.session.get("ai_usage", {"date": None, "count": 0})
-    return {
-        **user,
-        "ai_usage_today": ai_usage
-    }
 
 # @app.get("/test-email")
 # def test_email():

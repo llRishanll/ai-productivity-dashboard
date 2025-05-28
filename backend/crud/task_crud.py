@@ -18,18 +18,16 @@ async def get_all_tasks(user_id: int):
     return await database.fetch_all(query)
 
 async def update_task(task_id: int, user_id: int, data: TaskUpdate):
-    # Ensure the task exists and belongs to the user
     query = tasks.select().where((tasks.c.id == task_id) & (tasks.c.user_id == user_id))
     task = await database.fetch_one(query)
     if not task:
-        return None  # Not found or unauthorized
-    update_data = {k: v for k, v in data.model_dump().items() if v is not None} # Filter out None values to only update provided fields
+        return None  
+    update_data = {k: v for k, v in data.model_dump().items() if v is not None} 
     update_query = tasks.update().where(tasks.c.id == task_id).values(**update_data)
     await database.execute(update_query)
     return {**dict(task), **update_data}
 
 async def delete_task(task_id: int, user_id: int):
-    # Ensure the task exists and belongs to the user
     query = tasks.select().where((tasks.c.id == task_id) & (tasks.c.user_id == user_id))
     task = await database.fetch_one(query)
     if not task:

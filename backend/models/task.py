@@ -10,4 +10,5 @@ tasks = Table(
     Column("completed", Boolean, default=False),
     Column("user_id", Integer, ForeignKey("users.id"), nullable=False),
     Column("due_date", Date, nullable=True),  
+    Column("priority", Integer, nullable=True)
 )

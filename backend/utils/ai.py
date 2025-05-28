@@ -1,7 +1,6 @@
 from openai import OpenAI
 from datetime import date
-import json
-import os
+import json,os,re
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -16,27 +15,41 @@ def prioritize_tasks(tasks: list[dict]) -> str:
         f"- {task['title']}: {task['description']}" for task in tasks
     )
     prompt = (
-    "You're a professional productivity assistant. The user has a list of tasks below.\n"
-    "Your job is to:\n"
-    "1. Analyze the tasks and rank them by urgency and importance\n"
-    "2. Group them into high, medium, and low priority\n"
-    "3. Provide a daily plan with time blocks for each group\n\n"
-    f"Tasks:\n{task_text}\n\n"
-    "Reply ONLY with:\n"
-    "- A section for High Priority Tasks (with reasoning)\n"
-    "- A section for Medium Priority Tasks\n"
-    "- A section for Low Priority Tasks\n"
-    "- A Suggested Daily Schedule broken into morning, afternoon, and evening\n\n"
-    "Be clear and concise. Don't repeat the original task text unnecessarily."
+    "You're a productivity assistant. The user has a list of tasks below.\n"
+        "Classify each task as High, Medium, or Low priority based on urgency and importance.\n"
+        "Respond in the following JSON format (use task titles as keys):\n"
+        "{\n"
+        "  \"Go to gym\": \"High\",\n"
+        "  \"Buy groceries\": \"Low\"\n"
+        "}\n\n"
+        f"Tasks:\n{task_text}"
 )
 
     response = client.chat.completions.create(
         model = "gpt-3.5-turbo",
         messages = [{"role": "user", "content": prompt}],
         temperature = 0.7,
-        max_tokens = 150,
+        max_tokens = 300,
     )
-    return response.choices[0].message.content
+    try:
+        priority_map = json.loads(response.choices[0].message.content)
+    except json.JSONDecodeError:
+        priority_map = {}
+        for line in response.choices[0].message.content.splitlines():
+            match = re.match(r'^\s*"(.+?)"\s*:\s*"?(High|Medium|Low)"?', line)
+            if match:
+                priority_map[match.group(1)] = match.group(2)
+
+    result = []
+    for task in tasks:
+        title = task["title"]
+        if title in priority_map:
+            result.append({
+                "id": task["id"],
+                "priority": priority_map[title]
+            })
+
+    return result
 
 def generate_task_from_text(prompt:str)->dict:
     today_str = date.today().isoformat()
@@ -94,3 +107,77 @@ def generate_daily_plan(tasks: list[dict]) -> str:
     )
 
     return response.choices[0].message.content
+
+def summarize_tasks(tasks):
+    if not tasks:
+        return "You currently have no pending tasks."
+
+    task_descriptions = []
+    for task in tasks:
+        desc = f"- {task['title']}"
+        if task.get('description'):
+            desc += f": {task['description']}"
+        if task.get('due_date'):
+            desc += f" (Due: {task['due_date']})"
+        task_descriptions.append(desc)
+
+    prompt = (
+        "You are a productivity assistant. Summarize the following tasks into a single paragraph "
+        "that helps the user understand their current workload and what to focus on:\n\n"
+        + "\n".join(task_descriptions)
+        + "\n\nSummary:"
+    )
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",  
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": prompt},
+            ],
+            max_tokens=150,
+            temperature=0.7,
+        )
+        summary = response.choices[0].message.content.strip()
+        return summary
+    except Exception as e:
+        print("AI Summary Error:", e)
+        return "An error occurred while generating the summary."
+
+def generate_week_plan(tasks):
+    if not tasks:
+        return "No tasks found for the upcoming week."
+
+    today = date.today().strftime("%A, %B %d, %Y")
+    task_text = ""
+    for task in tasks:
+        title = task["title"]
+        desc = task["description"]
+        due = task["due_date"]
+        due_str = f"Due date: {due}" if due else ""
+        task_text += f"- Title: {title}\n  Description: {desc}\n  {due_str}\n\n"
+
+    prompt = (
+        f"Today is {today}.\n"
+        "You are a productivity assistant.\n"
+        "Below is a list of tasks of a user. Each task includes a title, a description, and sometimes a due date.\n\n"
+        f"Create an organized weekly plan ({today} to Sunday) for the user based on urgency, importance, due date and description.\n"
+        "DO NOT put tasks in days that have already passed.\n"
+        "DO NOT repeat tasks if already assigned to a day.\n"
+        "State upcoming days with no tasks and as free day."
+        "Return the response in the following format with all 7 days of the week:\n"
+        "- Monday:\n  - Task \n- Tuesday:\n  - Task \n...\n\n"
+        "TASKS:\n"
+        f"{task_text}"
+    )
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=500,
+            temperature=0.7
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        return f"Failed to generate weekly plan: {e}"
