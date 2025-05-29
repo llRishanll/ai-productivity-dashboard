@@ -4,13 +4,12 @@ from database import database, engine, metadata
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-import os
 from routes.auth_router import router as auth_router
 from routes.tasks_router import router as tasks_router
 from routes.ai_router import router as ai_router
-#from utils.notifications import send_email, send_daily_reminders
+from scheduler import start_scheduler
+import os
 load_dotenv()
-
 
 # Create tables
 metadata.create_all(bind=engine)
@@ -19,6 +18,7 @@ metadata.create_all(bind=engine)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await database.connect()
+    start_scheduler()
     yield
     await database.disconnect()
 
@@ -39,7 +39,6 @@ app.add_middleware(
 app.include_router(auth_router, tags=["Auth"])
 app.include_router(tasks_router, tags=["Tasks"])
 app.include_router(ai_router, tags=["AI"])
-
 
 
 # @app.get("/test-email")
