@@ -14,6 +14,7 @@ def prioritize_tasks(tasks: list[dict]) -> str:
     task_text = "\n".join(
         f"- {task['title']}: {task['description']}" for task in tasks
     )
+
     prompt = (
     "You're a productivity assistant. The user has a list of tasks below.\n"
         "Classify each task as High, Medium, or Low priority based on urgency and importance.\n"
@@ -31,6 +32,7 @@ def prioritize_tasks(tasks: list[dict]) -> str:
         temperature = 0.7,
         max_tokens = 300,
     )
+
     try:
         priority_map = json.loads(response.choices[0].message.content)
     except json.JSONDecodeError:
@@ -43,10 +45,11 @@ def prioritize_tasks(tasks: list[dict]) -> str:
     result = []
     for task in tasks:
         title = task["title"]
-        if title in priority_map:
+        key = f'{task["title"]}: {task["description"]}'
+        if key in priority_map:
             result.append({
                 "id": task["id"],
-                "priority": priority_map[title]
+                "priority": priority_map[key]
             })
 
     return result

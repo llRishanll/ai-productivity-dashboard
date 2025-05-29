@@ -12,6 +12,7 @@ class TaskIn(BaseModel):
 
 class TaskOut(BaseModel):
     id: int
+    user_id: int
     title: str
     description: Optional[str] = None
     due_date: Optional[date] = None
@@ -24,6 +25,7 @@ class TaskUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
     due_date: Optional[date] = None
+    priority: Optional[str] = None
     completed: Optional[bool] = None
 
     

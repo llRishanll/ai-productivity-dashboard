@@ -1,10 +1,9 @@
 from fastapi import APIRouter, Query, HTTPException,Depends
 from utils.security import oauth2_scheme,get_current_user
 from schemas.task_schema import TaskIn, TaskOut
-from crud.task_crud import create_task
-from crud.task_crud import update_task, delete_task
+from crud.task_crud import update_task, delete_task, create_task, get_task_analytics
 from schemas.task_schema import TaskUpdate
-from sqlalchemy import desc, asc, or_
+from sqlalchemy import desc, asc, or_ 
 from models.task import tasks
 from database import database
 
@@ -84,4 +83,10 @@ async def delete_task_route(task_id: int, token: str = Depends(oauth2_scheme)):
         raise HTTPException(status_code=404, detail="Task not found or unauthorized")
     return {"detail": f"Task {task_id} deleted."}
 
-
+@router.get("/tasks/analytics")
+async def task_analytics(token:str = Depends(oauth2_scheme)):
+    user = await get_current_user(token)
+    analytics = await get_task_analytics(user_id=user["id"])
+    if not analytics:
+        raise HTTPException(status_code=404, detail="Failed to retrieve analytics for this user")
+    return analytics
