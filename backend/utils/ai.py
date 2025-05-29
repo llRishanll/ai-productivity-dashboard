@@ -56,13 +56,17 @@ def generate_task_from_text(prompt:str)->dict:
     system_prompt = (
         "You are a task generation assistant. Your job is to create a task based on the user's input.\n"
         "Today's date is " + today_str + ".\n"
-        "The task should include a title, description, and due date if applicable.\n"
-        "If no due date is mentioned, omit that key.\n"
+        "The task should include a title, description, due date, recurring and recurring_until if applicable.\n"
+        "If no due date is mentioned, assign today's date.\n"
+        "If no recurring is mentioned, omit that key.\n"
+        "If no recurring_until is mentioned, omit that key.\n"
         "Reply ONLY with the task in JSON format:\n"
         "{\n"
         "  \"title\": \"Task Title\",\n"
         "  \"description\": \"Task Description\",\n"
         "  \"due_date\": \"YYYY-MM-DD\"\n"
+        "  \"recurring\": \"daily\",\"weekly\" or \"none\"\n"
+        "  \"recurring_until\": \"YYYY-MM-DD\"\n"
         "}"
     )
 

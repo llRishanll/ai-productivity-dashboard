@@ -4,7 +4,7 @@ from schemas.task_schema import TaskIn, TaskOut
 from crud.task_crud import create_task
 from crud.task_crud import update_task, delete_task
 from schemas.task_schema import TaskUpdate
-from sqlalchemy import desc, asc
+from sqlalchemy import desc, asc, or_
 from models.task import tasks
 from database import database
 
@@ -36,6 +36,7 @@ async def read_tasks(
     priority: str | None = Query(None),
     sort_by: str | None = Query(None),
     order: str = Query("asc"),
+    search: str | None = Query(None),
     token: str = Depends(oauth2_scheme)
     ):
     user = await get_current_user(token)
@@ -47,6 +48,14 @@ async def read_tasks(
 
     if priority:
         query = query.where(tasks.c.priority == priority)
+
+    if search:
+        query = query.where(
+            or_(
+                tasks.c.title.ilike(f"%{search}%"),
+                tasks.c.description.ilike(f"%{search}%")
+            )
+        )
 
     if sort_by:
         sort_column = tasks.c.due_date if sort_by == "due_date" else tasks.c.priority
