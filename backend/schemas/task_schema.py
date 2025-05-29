@@ -4,8 +4,11 @@ from datetime import date
 
 class TaskIn(BaseModel):
     title: str
-    description: str
+    description: Optional[str] = None
     due_date: Optional[date] = None
+    priority: Optional[str] = None
+    recurring: Optional[str] = "none"  
+    recurring_until: Optional[date] = date(2999, 1, 1)
 
 class TaskOut(BaseModel):
     id: int
@@ -13,6 +16,8 @@ class TaskOut(BaseModel):
     description: Optional[str] = None
     due_date: Optional[date] = None
     priority: Optional[str] = None
+    recurring: Optional[str] = "none"  
+    recurring_until: Optional[date] = date(2999, 1, 1)
     completed: bool
     
 class TaskUpdate(BaseModel):

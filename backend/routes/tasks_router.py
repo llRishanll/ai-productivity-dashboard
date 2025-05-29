@@ -17,6 +17,19 @@ async def add_task(task: TaskIn, token: str = Depends(oauth2_scheme)):
         raise HTTPException(status_code=401, detail="User not authenticated")
     return await create_task(task, user_id=user["id"])
 
+@router.delete("/tasks/delete-completed")
+async def delete_completed_tasks(token: str = Depends(oauth2_scheme)):
+    user = await get_current_user(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    query = tasks.delete().where(
+        (tasks.c.user_id == user["id"]) &
+        (tasks.c.completed == True)
+    )
+    await database.execute(query)
+    return {"message": "All completed tasks deleted."}
+
 @router.get("/tasks", response_model=list[TaskOut])
 async def read_tasks(
     completed: bool | None = Query(None),
@@ -62,15 +75,4 @@ async def delete_task_route(task_id: int, token: str = Depends(oauth2_scheme)):
         raise HTTPException(status_code=404, detail="Task not found or unauthorized")
     return {"detail": f"Task {task_id} deleted."}
 
-@router.delete("/tasks/completed")
-async def delete_completed_tasks(token: str = Depends(oauth2_scheme)):
-    user = await get_current_user(token)
-    if not user:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    query = tasks.delete().where(
-        (tasks.c.user_id == user["id"]) &
-        (tasks.c.completed == True)
-    )
-    await database.execute(query)
-    return {"message": "All completed tasks deleted."}
+
