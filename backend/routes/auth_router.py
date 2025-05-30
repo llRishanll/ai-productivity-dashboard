@@ -8,6 +8,7 @@ from schemas.user_schema import UserCreate, UserSignup
 from utils.security import hash_password, verify_password, create_access_token, get_current_user
 from database import database
 from models.user import users
+from main import limiter
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -35,7 +36,8 @@ oauth.register(
 )
 
 @router.post("/auth/signup", status_code=201)
-async def signup(user: UserSignup):
+@limiter.limit("3/minute")  
+async def signup(user: UserSignup, request: Request):
     query = users.select().where(users.c.email == user.email)
     existing_user = await database.fetch_one(query)
 
@@ -54,7 +56,8 @@ async def signup(user: UserSignup):
     return {"message": "User created successfully"}
 
 @router.post("/auth/login")
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+@limiter.limit("5/minute")
+async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends()):
     query = users.select().where(users.c.email == form_data.username)
     user = await database.fetch_one(query)
 
@@ -65,11 +68,13 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     return {"access_token": token, "token_type": "bearer"}
 
 @router.get("/auth/google-login")
+@limiter.limit("5/minute")
 async def login(request: Request):
     redirect_uri = request.url_for("auth_callback")
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 @router.get("/auth/callback")
+@limiter.limit("5/minute")
 async def auth_callback(request: Request):
     try:
         token = await oauth.google.authorize_access_token(request)
@@ -86,5 +91,6 @@ async def auth_callback(request: Request):
         return {"error": str(e)}
 
 @router.get("/me")
-async def get_current_user_data(current_user: dict = Depends(get_current_user)):
+@limiter.limit("10/minute")
+async def get_current_user_data(request: Request, current_user: dict = Depends(get_current_user)):
     return current_user

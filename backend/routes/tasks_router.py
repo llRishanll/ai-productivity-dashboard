@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query, HTTPException,Depends
+from fastapi import APIRouter, Query, HTTPException,Depends, Request
 from utils.security import oauth2_scheme,get_current_user
 from schemas.task_schema import TaskIn, TaskOut
 from crud.task_crud import update_task, delete_task, create_task, get_task_analytics
@@ -6,18 +6,21 @@ from schemas.task_schema import TaskUpdate
 from sqlalchemy import desc, asc, or_ 
 from models.task import tasks
 from database import database
+from main import limiter
 
 router = APIRouter()
 
 @router.post("/tasks", response_model=TaskOut)
-async def add_task(task: TaskIn, token: str = Depends(oauth2_scheme)):
+@limiter.limit("10/minute")
+async def add_task(request: Request, task: TaskIn, token: str = Depends(oauth2_scheme)):
     user = await get_current_user(token)
     if not user:
         raise HTTPException(status_code=401, detail="User not authenticated")
     return await create_task(task, user_id=user["id"])
 
 @router.delete("/tasks/delete-completed")
-async def delete_completed_tasks(token: str = Depends(oauth2_scheme)):
+@limiter.limit("5/minute")
+async def delete_completed_tasks(request: Request, token: str = Depends(oauth2_scheme)):
     user = await get_current_user(token)
     if not user:
         raise HTTPException(status_code=401, detail="Not authenticated")
@@ -30,7 +33,9 @@ async def delete_completed_tasks(token: str = Depends(oauth2_scheme)):
     return {"message": "All completed tasks deleted."}
 
 @router.get("/tasks", response_model=list[TaskOut])
+@limiter.limit("20/minute")
 async def read_tasks(
+    request: Request,
     completed: bool | None = Query(None),
     priority: str | None = Query(None),
     sort_by: str | None = Query(None),
@@ -64,7 +69,8 @@ async def read_tasks(
     return results
 
 @router.patch("/tasks/{task_id}", response_model=TaskOut)
-async def patch_task(task_id: int, task: TaskUpdate, token: str = Depends(oauth2_scheme)):
+@limiter.limit("10/minute")
+async def patch_task(request: Request, task_id: int, task: TaskUpdate, token: str = Depends(oauth2_scheme)):
     user = await get_current_user(token)
     if not user:
         raise HTTPException(status_code=401, detail="User not authenticated")
@@ -74,7 +80,8 @@ async def patch_task(task_id: int, task: TaskUpdate, token: str = Depends(oauth2
     return updated
 
 @router.delete("/tasks/{task_id}")
-async def delete_task_route(task_id: int, token: str = Depends(oauth2_scheme)):
+@limiter.limit("10/minute")
+async def delete_task_route(request: Request, task_id: int, token: str = Depends(oauth2_scheme)):
     user = await get_current_user(token)
     if not user:
         raise HTTPException(status_code=401, detail="Not logged in")
@@ -84,7 +91,8 @@ async def delete_task_route(task_id: int, token: str = Depends(oauth2_scheme)):
     return {"detail": f"Task {task_id} deleted."}
 
 @router.get("/tasks/analytics")
-async def task_analytics(token:str = Depends(oauth2_scheme)):
+@limiter.limit("10/minute")
+async def task_analytics(request: Request, token:str = Depends(oauth2_scheme)):
     user = await get_current_user(token)
     analytics = await get_task_analytics(user_id=user["id"])
     if not analytics:

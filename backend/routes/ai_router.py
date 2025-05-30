@@ -1,17 +1,19 @@
-from fastapi import APIRouter, HTTPException, Body,Depends
+from fastapi import APIRouter, HTTPException, Body,Depends,Request
 from utils.security import oauth2_scheme,get_current_user
 from schemas.task_schema import TaskIn, TaskOut
 from crud.task_crud import create_task, get_all_tasks
-from utils.ai import generate_task_from_text, prioritize_tasks, generate_daily_plan,summarize_tasks,generate_week_plan
+from utils.ai import generate_task_from_text, prioritize_tasks, generate_daily_plan, summarize_tasks,generate_week_plan
 from datetime import date,timedelta
 from models.task import tasks
 from database import database
 from sqlalchemy import or_
+from main import limiter
 
 router = APIRouter()
 
 @router.post("/tasks/ai-generate", response_model=TaskOut)
-async def ai_generate_task(token: str = Depends(oauth2_scheme), prompt: str = Body(...)):
+@limiter.limit("3/minute;10/hour")
+async def ai_generate_task(request: Request, token: str = Depends(oauth2_scheme), prompt: str = Body(...)):
     user = await get_current_user(token)
     if not user:
         raise HTTPException(status_code=401, detail="Not logged in")
@@ -22,7 +24,8 @@ async def ai_generate_task(token: str = Depends(oauth2_scheme), prompt: str = Bo
     return await create_task(task_in, user_id=user["id"])
 
 @router.get("/tasks/ai-prioritize")
-async def ai_prioritize(token: str = Depends(oauth2_scheme)):
+@limiter.limit("2/minute;5/hour")
+async def ai_prioritize(request: Request, token: str = Depends(oauth2_scheme)):
     user = await get_current_user(token)
     if not user:
         raise HTTPException(status_code=401, detail="Not logged in")
@@ -38,7 +41,8 @@ async def ai_prioritize(token: str = Depends(oauth2_scheme)):
     return {"ai_plan": ai_response}
 
 @router.get("/tasks/ai-daily-plan")
-async def ai_daily_plan(token: str = Depends(oauth2_scheme)):
+@limiter.limit("2/minute;5/hour")
+async def ai_daily_plan(request: Request, token: str = Depends(oauth2_scheme)):
     user = await get_current_user(token)
     if not user:
         raise HTTPException(status_code=401, detail="Not logged in")
@@ -53,7 +57,8 @@ async def ai_daily_plan(token: str = Depends(oauth2_scheme)):
     return {"plan": plan}
 
 @router.get("/tasks/ai-summary")
-async def ai_summary(token: str = Depends(oauth2_scheme)):
+@limiter.limit("2/minute;5/hour")
+async def ai_summary(request: Request, token: str = Depends(oauth2_scheme)):
     user = await get_current_user(token)
     if not user:
         raise HTTPException(status_code=401, detail="Not logged in")
@@ -70,7 +75,8 @@ async def ai_summary(token: str = Depends(oauth2_scheme)):
     return {"summary": summary}
 
 @router.get("/tasks/ai-week-plan")
-async def ai_week_plan(token: str = Depends(oauth2_scheme)):
+@limiter.limit("2/minute;5/hour")
+async def ai_week_plan(request: Request, token: str = Depends(oauth2_scheme)):
     user = await get_current_user(token)
     if not user:
         raise HTTPException(status_code=401, detail="Not logged in")

@@ -1,4 +1,8 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI,Request
+from utils.rate_limiter import limiter
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
+from starlette.responses import JSONResponse
 from contextlib import asynccontextmanager
 from database import database, engine, metadata
 from starlette.middleware.sessions import SessionMiddleware
@@ -24,6 +28,10 @@ async def lifespan(app: FastAPI):
 
 # Pass lifespan to FastAPI
 app = FastAPI(lifespan=lifespan)
+
+app.state.limiter = limiter
+app.add_middleware(SlowAPIMiddleware)
+
 app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY"))
 
 app.add_middleware(
@@ -40,6 +48,12 @@ app.include_router(auth_router, tags=["Auth"])
 app.include_router(tasks_router, tags=["Tasks"])
 app.include_router(ai_router, tags=["AI"])
 
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_exceeded_handler(request:Request, exc:RateLimitExceeded):
+    return JSONResponse(
+        status_code=429,
+        content={"detail": "Rate limit exceeded. Please try again later."},
+    )
 
 # @app.get("/test-email")
 # def test_email():
