@@ -15,7 +15,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 secret_key = os.getenv("SECRET_KEY")
 algorithm=os.getenv("ALGORITHM")
-expiry=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+expiry=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
