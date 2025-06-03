@@ -1,5 +1,6 @@
+import os
+from dotenv import load_dotenv
 from fastapi import FastAPI,Request
-from utils.rate_limiter import limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from starlette.responses import JSONResponse
@@ -7,13 +8,14 @@ from contextlib import asynccontextmanager
 from database import database, engine, metadata
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
+load_dotenv()
+from utils.rate_limiter import limiter
 from routes.auth_router import router as auth_router
 from routes.tasks_router import router as tasks_router
 from routes.ai_router import router as ai_router
+
 from scheduler import start_scheduler
-import os
-load_dotenv()
+
 
 # Create tables
 metadata.create_all(bind=engine)
@@ -30,6 +32,13 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.state.limiter = limiter
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_exceeded_handler(request:Request, exc:RateLimitExceeded):
+    return JSONResponse(
+        status_code=429,
+        content={"detail": "Rate limit exceeded. Please try again later."},
+    )
+
 app.add_middleware(SlowAPIMiddleware)
 
 app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY"))
@@ -48,12 +57,6 @@ app.include_router(auth_router, tags=["Auth"])
 app.include_router(tasks_router, tags=["Tasks"])
 app.include_router(ai_router, tags=["AI"])
 
-@app.exception_handler(RateLimitExceeded)
-async def rate_limit_exceeded_handler(request:Request, exc:RateLimitExceeded):
-    return JSONResponse(
-        status_code=429,
-        content={"detail": "Rate limit exceeded. Please try again later."},
-    )
 
 # @app.get("/test-email")
 # def test_email():
