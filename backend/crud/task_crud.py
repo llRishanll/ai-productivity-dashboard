@@ -16,7 +16,7 @@ async def create_task(task: TaskIn, user_id: int):
         recurring_until=task.recurring_until
     )
     task_id = await database.execute(query)
-    return {**task.model_dump(), "id": task_id, "completed": False}
+    return {**task.model_dump(),"user_id": user_id, "id": task_id, "completed": False}
 
 async def get_all_tasks(user_id: int):
     query = tasks.select().where(tasks.c.user_id == user_id)

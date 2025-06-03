@@ -94,6 +94,9 @@ async def delete_task_route(request: Request, task_id: int, token: str = Depends
 @limiter.limit("10/minute")
 async def task_analytics(request: Request, token:str = Depends(oauth2_scheme)):
     user = await get_current_user(token)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not logged in")
+    
     analytics = await get_task_analytics(user_id=user["id"])
     if not analytics:
         raise HTTPException(status_code=404, detail="Failed to retrieve analytics for this user")

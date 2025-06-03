@@ -38,7 +38,7 @@ async def ai_prioritize(request: Request, token: str = Depends(oauth2_scheme)):
         query = tasks.update().where(tasks.c.id == item["id"]).values(priority=item["priority"])
         await database.execute(query)
 
-    return {"ai_plan": ai_response}
+    return {"Updated priorities": ai_response}
 
 @router.get("/tasks/ai-daily-plan")
 @limiter.limit("2/minute;5/hour")
@@ -68,7 +68,7 @@ async def ai_summary(request: Request, token: str = Depends(oauth2_scheme)):
     )
     pending_tasks = await database.fetch_all(query)
     if not pending_tasks:
-        return {"summary": "You have no pending tasks. Great job!"}
+        return {"message": "You have no pending tasks. Great job!"}
     
     task_dicts = [dict(task) for task in pending_tasks]
     summary = summarize_tasks(task_dicts)
