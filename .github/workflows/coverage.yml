@@ -2,9 +2,7 @@ name: Backend Tests & Coverage
 
 on:
   push:
-    branches: [main, dev, feat/tests]
-  pull_request:
-    branches: [main, dev]
+    branches: [main, dev, readme]
 
 jobs:
   test:
@@ -33,6 +31,6 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./backend
           flags: backend
+          working-directory: backend
+
