@@ -5,12 +5,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+def get_openai_client():
+    from os import getenv
+    return OpenAI(api_key=getenv("OPENAI_API_KEY"))
 
 def prioritize_tasks(tasks: list[dict]) -> str:
     if not tasks:
         return "No tasks provided."
-    
+
+    client = get_openai_client()
     task_text = "\n".join(
         f"- {task['title']}: {task['description']}" for task in tasks
     )
@@ -79,7 +82,7 @@ def generate_task_from_text(prompt:str)->dict:
     "  \"recurring_until\": \"YYYY-MM-DD\"               // omit if not provided\n"
     "}"
 )
-
+    client = get_openai_client()
     response = client.chat.completions.create(
         model = "gpt-3.5-turbo",
         messages = [
@@ -119,7 +122,7 @@ def generate_daily_plan(tasks: list[dict]) -> str:
     f"Tasks:\n{task_list}"
 )
 
-
+    client = get_openai_client()
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}],
@@ -153,6 +156,7 @@ def summarize_tasks(tasks):
 
 
     try:
+        client = get_openai_client()
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",  
             messages=[
@@ -197,6 +201,7 @@ def generate_week_plan(tasks):
 
 
     try:
+        client = get_openai_client()
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt}],
