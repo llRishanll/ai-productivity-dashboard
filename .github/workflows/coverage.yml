@@ -2,7 +2,7 @@ name: Backend Tests & Coverage
 
 on:
   push:
-    branches: [main, dev, readme]
+    branches: [main, dev]
 
 jobs:
   test:
