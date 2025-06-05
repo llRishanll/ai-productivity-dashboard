@@ -43,9 +43,10 @@ app.add_middleware(SlowAPIMiddleware)
 
 app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY"))
 
+allowed_origins = os.getenv("FRONTEND_URL", "*").split(",") if os.getenv("FRONTEND_URL") else ["*"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.getenv("FRONTEND_URL"),
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
