@@ -16,15 +16,20 @@ def prioritize_tasks(tasks: list[dict]) -> str:
     )
 
     prompt = (
-    "You're a productivity assistant. The user has a list of tasks below.\n"
-        "Classify each task as High, Medium, or Low priority based on urgency and importance.\n"
-        "Respond in the following JSON format (use task titles as keys):\n"
-        "{\n"
-        "  \"Go to gym\": \"High\",\n"
-        "  \"Buy groceries\": \"Low\"\n"
-        "}\n\n"
-        f"Tasks:\n{task_text}"
+    "You are a productivity AI assistant. Your task is to analyze the user's task list "
+    "and classify each task's priority as 'High', 'Medium', or 'Low'.\n\n"
+    "Classification should be based on:\n"
+    "- Urgency (e.g. due soon, time-sensitive)\n"
+    "- Importance (e.g. critical for goals, impact level)\n\n"
+    "Respond ONLY in valid JSON using this exact format:\n"
+    "{\n"
+    "  \"Task Title One\": \"High\",\n"
+    "  \"Task Title Two\": \"Low\"\n"
+    "}\n\n"
+    "Input task list:\n"
+    f"{task_text}"
 )
+
 
     response = client.chat.completions.create(
         model = "gpt-3.5-turbo",
@@ -57,21 +62,23 @@ def prioritize_tasks(tasks: list[dict]) -> str:
 def generate_task_from_text(prompt:str)->dict:
     today_str = date.today().isoformat()
     system_prompt = (
-        "You are a task generation assistant. Your job is to create a task based on the user's input.\n"
-        "Today's date is " + today_str + ".\n"
-        "The task should include a title, description, due date, recurring and recurring_until if applicable.\n"
-        "If no due date is mentioned, assign today's date.\n"
-        "If no recurring is mentioned, omit that key.\n"
-        "If no recurring_until is mentioned, omit that key.\n"
-        "Reply ONLY with the task in JSON format:\n"
-        "{\n"
-        "  \"title\": \"Task Title\",\n"
-        "  \"description\": \"Task Description\",\n"
-        "  \"due_date\": \"YYYY-MM-DD\"\n"
-        "  \"recurring\": \"daily\",\"weekly\" or \"none\"\n"
-        "  \"recurring_until\": \"YYYY-MM-DD\"\n"
-        "}"
-    )
+    "You are a task generation assistant.\n"
+    "Your role is to generate a structured task based on the user's input. Today’s date is "
+    f"{today_str}.\n\n"
+    "Rules:\n"
+    "- Always include: 'title', 'description', and 'due_date'.\n"
+    "- If a due date is missing, default to today's date.\n"
+    "- Include 'recurring' and 'recurring_until' ONLY if the user input mentions repetition.\n"
+    "- All dates must follow 'YYYY-MM-DD' format.\n\n"
+    "Respond ONLY with a valid JSON object using this structure:\n"
+    "{\n"
+    "  \"title\": \"...\",\n"
+    "  \"description\": \"...\",\n"
+    "  \"due_date\": \"YYYY-MM-DD\",\n"
+    "  \"recurring\": \"daily\" | \"weekly\" | \"none\",  // omit if not recurring\n"
+    "  \"recurring_until\": \"YYYY-MM-DD\"               // omit if not provided\n"
+    "}"
+)
 
     response = client.chat.completions.create(
         model = "gpt-3.5-turbo",
@@ -97,15 +104,21 @@ def generate_daily_plan(tasks: list[dict]) -> str:
     )
 
     prompt = (
-        f"Today is {date.today().isoformat()}.\n"
-        "Here is a list of tasks due today. Based on urgency, context, and common sense, "
-        "do the following:\n"
-        "1. Prioritize them (High, Medium, Low)\n"
-        "2. Provide a clear schedule broken into morning, afternoon, and evening along with relevant time allocation and estimates\n\n"
-        f"Tasks:\n{task_list}\n\n"
-        "Format it as:\n\n"
-        "**High Priority**\n- ...\n\n**Medium Priority**\n- ...\n\n**Schedule**\n- Morning: ...\n"
-    )
+    f"Today is {date.today().isoformat()}.\n"
+    "You are a productivity planning assistant.\n"
+    "The user has a list of tasks due today. Your job is to:\n"
+    "1. Prioritize each task as High, Medium, or Low\n"
+    "2. Create a realistic schedule for the day, broken into:\n"
+    "   - Morning (before 12pm)\n"
+    "   - Afternoon (12pm–5pm)\n"
+    "   - Evening (after 5pm)\n"
+    "Include time estimates for each scheduled task.\n\n"
+    "Return your response in this format:\n"
+    "**High Priority**\n- Task A\n\n**Medium Priority**\n- Task B\n\n"
+    "**Schedule**\n- Morning: Task A (1 hr), Task C (30 min)\n- Afternoon: ...\n\n"
+    f"Tasks:\n{task_list}"
+)
+
 
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -129,11 +142,15 @@ def summarize_tasks(tasks):
         task_descriptions.append(desc)
 
     prompt = (
-        "You are a productivity assistant. Summarize the following tasks into a single paragraph "
-        "that helps the user understand their current workload and what to focus on:\n\n"
-        + "\n".join(task_descriptions)
-        + "\n\nSummary:"
-    )
+    "You are a productivity assistant. The user has the following tasks today:\n\n"
+    + "\n".join(task_descriptions) +
+    "\n\n"
+    "Your goal is to write a concise, human-readable summary (~3–4 sentences) "
+    "that captures the overall workload and what the user should focus on first.\n"
+    "Do NOT list all tasks. Instead, synthesize and prioritize. Start with the most urgent focus.\n\n"
+    "Summary:"
+)
+
 
     try:
         response = client.chat.completions.create(
@@ -165,18 +182,19 @@ def generate_week_plan(tasks):
         task_text += f"- Title: {title}\n  Description: {desc}\n  {due_str}\n\n"
 
     prompt = (
-        f"Today is {today}.\n"
-        "You are a productivity assistant.\n"
-        "Below is a list of tasks of a user. Each task includes a title, a description, and sometimes a due date.\n\n"
-        f"Create an organized weekly plan ({today} to Sunday) for the user based on urgency, importance, due date and description.\n"
-        "DO NOT put tasks in days that have already passed.\n"
-        "DO NOT repeat tasks if already assigned to a day.\n"
-        "State upcoming days with no tasks and as free day."
-        "Return the response in the following format with all 7 days of the week:\n"
-        "- Monday:\n  - Task \n- Tuesday:\n  - Task \n...\n\n"
-        "TASKS:\n"
-        f"{task_text}"
-    )
+    f"Today is {today}.\n"
+    "You are a smart scheduling assistant. The user has provided a list of tasks with titles, "
+    "descriptions, and sometimes due dates.\n\n"
+    "Generate a weekly plan from today through Sunday. Follow these rules:\n"
+    "- Assign tasks based on urgency, due date, and importance.\n"
+    "- Skip days already past.\n"
+    "- Do NOT duplicate tasks.\n"
+    "- Mark any remaining days without tasks as 'Free Day'.\n\n"
+    "Return the response in this exact format:\n"
+    "- Monday:\n  - Task\n- Tuesday:\n  - Task\n...\n\n"
+    f"User Tasks:\n{task_text}"
+)
+
 
     try:
         response = client.chat.completions.create(
