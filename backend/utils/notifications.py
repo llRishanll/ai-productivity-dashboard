@@ -22,7 +22,7 @@ def send_email(to_email: str, tasks: list[dict]):
     msg['Subject'] = subject
     msg.attach(MIMEText(body, 'plain'))
 
-    server = smtplib.SMTP(os.getenv("EMAIL_HOST"), int(os.getenv("EMAIL_PORT")))
+    server = smtplib.SMTP(os.getenv("EMAIL_HOST"), int(os.getenv("EMAIL_PORT", 587)))
     server.starttls()
     server.login(os.getenv("EMAIL_USER"), os.getenv("EMAIL_PASS"))
     server.send_message(msg)
