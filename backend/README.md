@@ -1,1 +1,1 @@
-![Coverage](https://codecov.io/gh/YOUR_USERNAME/YOUR_REPO/branch/main/graph/badge.svg)
+![Coverage](https://codecov.io/gh/llRishanll/ai-productivity-dashboard/branch/main/graph/badge.svg)
