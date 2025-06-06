@@ -11,7 +11,8 @@ async def create_user(user: UserCreate):
         email=user.email,
         name=user.name,
         picture=user.picture,
-        is_verified=True
+        is_verified=True,
+        role="user",  
     )
     user_id = await database.execute(query)
     return {**user.model_dump(), "id": user_id}

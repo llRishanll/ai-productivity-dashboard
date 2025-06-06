@@ -2,9 +2,8 @@ import pytest
 from datetime import timedelta, date, datetime
 from unittest.mock import patch, MagicMock
 from tests.conftest import delete_all_tasks_for_user
+from tests.conftest import auth_headers
 
-def auth_headers(token: str):
-    return {"Authorization": f"Bearer {token}"}
 
 @pytest.mark.asyncio
 @patch("utils.ai.get_openai_client")

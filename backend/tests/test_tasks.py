@@ -1,9 +1,6 @@
 import pytest
 import asyncio
-
-
-def auth_headers(token: str):
-    return {"Authorization": f"Bearer {token}"}
+from tests.conftest import auth_headers
 
 @pytest.mark.asyncio
 async def test_create_task_full(client, test_user):
