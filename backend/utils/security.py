@@ -30,7 +30,7 @@ def create_access_token(data: dict, expires_delta: timedelta = timedelta(minutes
     return jwt.encode(to_encode, secret_key, algorithm)
 
 def create_verification_token(email: str) -> str:
-    expire = datetime.utcnow() + timedelta(hours=1)
+    expire = datetime.utcnow() + timedelta(minutes=15)
     payload = {"sub": email, "exp": expire}
     return jwt.encode(payload, secret_key, algorithm)
 

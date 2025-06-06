@@ -7,6 +7,7 @@ from database import database
 from models.user import users
 from models.task import tasks
 from utils.security import get_current_user
+from utils.notifications import send_verification_email
 
 
 test_user_data = {
@@ -25,7 +26,17 @@ async def client():
 async def test_user(client):
     if not database.is_connected:
         await database.connect()
+
+    await database.execute(users.delete().where(users.c.email == test_user_data["email"]))
+
+    async def fake_send_verification_email(to_email, token):
+        print(f"Mocked verification sent to {to_email} with token {token}")
+    send_verification_email.__code__ = fake_send_verification_email.__code__
+
     await client.post("/auth/signup", json=test_user_data)
+    
+    query = users.update().where(users.c.email == test_user_data["email"]).values(is_verified=True)
+    await database.execute(query)
 
     form_data = {
         "username": test_user_data["email"],
