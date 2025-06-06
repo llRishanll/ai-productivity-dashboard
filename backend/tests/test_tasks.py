@@ -1,6 +1,7 @@
 import pytest
 import asyncio
 from tests.conftest import auth_headers
+from tests.conftest import delete_all_tasks_for_user
 
 @pytest.mark.asyncio
 async def test_create_task_full(client, test_user):
@@ -59,8 +60,8 @@ async def test_get_tasks_basic(client, test_user):
     res = await client.get("/tasks", headers=headers)
     assert res.status_code == 200
     data = res.json()
-    assert isinstance(data, list)
-    titles = [task["title"] for task in data]
+    assert isinstance(data["tasks"], list)
+    titles = [task["title"] for task in data["tasks"]]
     assert "Task A" in titles
     assert "Task B" in titles
 
@@ -72,7 +73,7 @@ async def test_get_tasks_filtered_by_completed(client, test_user):
     await client.post("/tasks", json={"title": "Incomplete Task"}, headers=headers)
     res = await client.get("/tasks?completed=false", headers=headers)
     assert res.status_code == 200
-    for task in res.json():
+    for task in res.json()["tasks"]:
         assert task["completed"] is False
 
 @pytest.mark.asyncio
@@ -84,7 +85,7 @@ async def test_get_tasks_filtered_by_priority(client, test_user):
 
     res = await client.get("/tasks?priority=High", headers=headers)
     assert res.status_code == 200
-    for task in res.json():
+    for task in res.json()["tasks"]:
         assert task["priority"] == "High"
 
 @pytest.mark.asyncio
@@ -96,7 +97,7 @@ async def test_get_tasks_search_by_title(client, test_user):
 
     res = await client.get("/tasks?search=alpha", headers=headers)
     assert res.status_code == 200
-    titles = [task["title"].lower() for task in res.json()]
+    titles = [task["title"].lower() for task in res.json()["tasks"]]
     assert any("alpha" in title for title in titles)
 
 @pytest.mark.asyncio
@@ -108,7 +109,7 @@ async def test_get_tasks_search_by_description(client, test_user):
     await asyncio.sleep(0.2)
     res = await client.get("/tasks?search=egg", headers=headers)
     assert res.status_code == 200
-    descriptions = [task["description"].lower() for task in res.json()]
+    descriptions = [task["description"].lower() for task in res.json()["tasks"]]
     assert any("egg" in desc for desc in descriptions)
 
 @pytest.mark.asyncio
@@ -120,7 +121,7 @@ async def test_get_tasks_sorted_by_due_date(client, test_user):
 
     res = await client.get("/tasks?sort_by=due_date&order=asc", headers=headers)
     assert res.status_code == 200
-    data = res.json()
+    data = res.json()["tasks"]
     tasks_with_due_date = [task for task in data if task["due_date"] is not None]
 
     for i in range(len(tasks_with_due_date) - 1):
@@ -136,7 +137,7 @@ async def test_get_tasks_sorted_by_priority(client, test_user):
 
     res = await client.get("/tasks?sort_by=priority&order=asc", headers=headers)
     assert res.status_code == 200
-    data = res.json()
+    data = res.json()["tasks"]
     tasks_with_priority = [t for t in data if t["priority"] is not None]
 
     for i in range(len(tasks_with_priority) - 1):
@@ -145,6 +146,7 @@ async def test_get_tasks_sorted_by_priority(client, test_user):
 @pytest.mark.asyncio
 async def test_delete_completed_tasks(client, test_user):
     headers = auth_headers(test_user["token"])
+    await delete_all_tasks_for_user(test_user["token"])
 
     res1 = await client.post("/tasks", json={"title": "Done Task"}, headers=headers)
     task1_id = res1.json()["id"]
@@ -158,8 +160,9 @@ async def test_delete_completed_tasks(client, test_user):
     assert delete_res.status_code == 200
 
     res = await client.get("/tasks", headers=headers)
-    remaining_ids = [task["id"] for task in res.json()]
-    
+    data = res.json()
+    remaining_ids = [task["id"] for task in data["tasks"]]
+
     assert task1_id not in remaining_ids  
     assert task2_id in remaining_ids      
 
@@ -216,12 +219,10 @@ async def test_delete_task_unauthorized(client):
 async def test_get_task_analytics(client, test_user):
     headers = auth_headers(test_user["token"])
 
-    # Create a completed task
     res = await client.post("/tasks", json={"title": "Analytics Task 1"}, headers=headers)
     task_id = res.json()["id"]
     await client.patch(f"/tasks/{task_id}", json={"completed": True}, headers=headers)
 
-    # Create a pending task with priority
     await client.post("/tasks", json={"title": "Analytics Task 2", "priority": "Medium"}, headers=headers)
 
     res = await client.get("/tasks/analytics", headers=headers)

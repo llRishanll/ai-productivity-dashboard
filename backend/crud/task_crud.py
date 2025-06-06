@@ -27,14 +27,14 @@ async def update_task(task_id: int, user_id: int, data: TaskUpdate):
     task = await database.fetch_one(query)
     if not task:
         return None  
-    update_data = {k: v for k, v in data.model_dump().items() if v is not None} 
+    update_data = data.model_dump(exclude_unset=True) 
     update_query = tasks.update().where(tasks.c.id == task_id).values(**update_data)
     await database.execute(update_query)
     
     if (
         update_data.get("completed") == True
         and task["completed"] == False
-        and task["recurring"]!="none"
+        and task["recurring"] != "none"
         and task["due_date"]
     ):
         next_due = None
@@ -56,7 +56,9 @@ async def update_task(task_id: int, user_id: int, data: TaskUpdate):
             }
             insert_query = tasks.insert().values(**new_task)
             await database.execute(insert_query)
-    return {**dict(task), **update_data}
+    query = tasks.select().where(tasks.c.id == task_id)
+    updated_task = await database.fetch_one(query)
+    return updated_task
 
 async def delete_task(task_id: int, user_id: int):
     query = tasks.select().where((tasks.c.id == task_id) & (tasks.c.user_id == user_id))

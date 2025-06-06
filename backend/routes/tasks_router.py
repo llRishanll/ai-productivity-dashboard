@@ -73,12 +73,13 @@ async def read_tasks(
     total_count = await database.fetch_val(total_query)
 
     results = await database.fetch_all(paginated_query)
+    task_list = [dict(r) for r in results]
 
     return {
         "total_tasks": total_count,
         "limit": limit,
         "offset": offset,
-        "tasks": results
+        "tasks": task_list
     }
 
 @router.patch("/tasks/{task_id}", response_model=TaskOut)
