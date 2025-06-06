@@ -80,6 +80,21 @@ async def verify_email(token: str, request: Request):
 
     return {"message": "Email verified successfully"}
 
+@router.post("/resend-verification")
+@limiter.limit("1/minute")
+async def resend_verification(request: Request, email: str):
+    user = await database.fetch_one(users.select().where(users.c.email == email))
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found. Sign up first.")
+    if user["is_verified"]:
+        raise HTTPException(status_code=400, detail="User already verified")
+
+    token = create_verification_token(user["id"])
+    send_verification_email(user["email"], token)
+
+    return {"message": "Verification email resent"}
+
+
 @router.post("/auth/login")
 @limiter.limit("5/minute")
 async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends()):
