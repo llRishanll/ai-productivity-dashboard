@@ -29,6 +29,15 @@ def create_access_token(data: dict, expires_delta: timedelta = timedelta(minutes
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, secret_key, algorithm)
 
+def create_verification_token(email: str) -> str:
+    expire = datetime.utcnow() + timedelta(hours=1)
+    payload = {"sub": email, "exp": expire}
+    return jwt.encode(payload, secret_key, algorithm)
+
+def decode_verification_token(token: str) -> str:
+    payload = jwt.decode(token, secret_key, algorithms=[algorithm])
+    return payload.get("sub")
+
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -47,4 +56,10 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     user = await database.fetch_one(query)
     if user is None:
         raise credentials_exception
+    
+    if not user["is_verified"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Email not verified."
+        )
     return user

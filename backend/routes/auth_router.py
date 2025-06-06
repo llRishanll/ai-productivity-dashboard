@@ -5,7 +5,8 @@ from authlib.integrations.starlette_client import OAuth
 from starlette.config import Config
 from crud.user_crud import get_or_create_user
 from schemas.user_schema import UserCreate, UserSignup
-from utils.security import hash_password, verify_password, create_access_token, get_current_user
+from utils.security import hash_password, verify_password, create_access_token, get_current_user, create_verification_token, decode_verification_token
+from utils.notifications import send_verification_email
 from database import database
 from models.user import users
 from main import limiter
@@ -49,11 +50,35 @@ async def signup(user: UserSignup, request: Request):
         email=user.email,
         name=user.name,
         password_hash=hashed,
+        is_verified=False,
         picture=""
     )
     await database.execute(insert_query)
+    token = create_verification_token(user.email)
+    send_verification_email(user.email, token)
+    return {"message": "User created. Please verify your email."}
 
-    return {"message": "User created successfully"}
+@router.get("/auth/verify-email/")
+@limiter.limit("5/minute")
+async def verify_email(token: str, request: Request):
+    try:
+        email = decode_verification_token(token)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Invalid or expired token")
+
+    query = users.select().where(users.c.email == email)
+    user = await database.fetch_one(query)
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if user["is_verified"]:
+        return {"message": "Email already verified"}
+
+    update_query = users.update().where(users.c.email == email).values(is_verified=True)
+    await database.execute(update_query)
+
+    return {"message": "Email verified successfully"}
 
 @router.post("/auth/login")
 @limiter.limit("5/minute")
@@ -63,7 +88,9 @@ async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends
 
     if not user or not verify_password(form_data.password, user["password_hash"]):
         raise HTTPException(status_code=401, detail="Invalid email or password")
-
+    if not user["is_verified"]:
+        raise HTTPException(status_code=403, detail="Email not verified")
+    
     token = create_access_token(data={"sub": user["email"]})
     return {"access_token": token, "token_type": "bearer"}
 

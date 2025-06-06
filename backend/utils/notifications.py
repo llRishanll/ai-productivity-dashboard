@@ -42,3 +42,21 @@ async def send_daily_reminders():
         user = await database.fetch_one(user_query)
         if user and user["email"]:
             send_email(user["email"], task_list)
+
+
+def send_verification_email(email: str, token: str):
+    verify_url = f"{os.getenv('FRONTEND_URL')}/verify-email?token={token}"
+    subject = "Verify your email"
+    body = f"Click the link to verify your account: {verify_url}"
+
+    msg = MIMEMultipart()
+    msg['From'] = os.getenv("EMAIL_USER")
+    msg['To'] = email
+    msg['Subject'] = subject
+    msg.attach(MIMEText(body, 'plain'))
+
+    server = smtplib.SMTP(os.getenv("EMAIL_HOST"), int(os.getenv("EMAIL_PORT")))
+    server.starttls()
+    server.login(os.getenv("EMAIL_USER"), os.getenv("EMAIL_PASS"))
+    server.send_message(msg)
+    server.quit()
