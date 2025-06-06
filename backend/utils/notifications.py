@@ -5,9 +5,18 @@ from datetime import date
 from database import database
 from models.user import users 
 from models.task import tasks
+from jinja2 import Environment, FileSystemLoader
+from pathlib import Path
 import os
 from dotenv import load_dotenv
 load_dotenv()
+
+TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
+env = Environment(loader=FileSystemLoader(TEMPLATES_DIR))
+
+def render_template(template_name: str, context: dict) -> str:
+    template = env.get_template(template_name)
+    return template.render(context)
 
 def send_email(to_email: str, tasks: list[dict]):
     if not tasks:
@@ -45,15 +54,15 @@ async def send_daily_reminders():
 
 
 def send_verification_email(email: str, token: str):
-    verify_url = f"{os.getenv('FRONTEND_URL')}/verify-email?token={token}"
+    verification_url = f"{os.getenv('FRONTEND_URL')}/verify-email?token={token}"
     subject = "Verify your email"
-    body = f"Click the link to verify your account: {verify_url}"
+    body = f"Click the link to verify your account: {verification_url}"
 
     msg = MIMEMultipart()
     msg['From'] = os.getenv("EMAIL_USER")
     msg['To'] = email
     msg['Subject'] = subject
-    msg.attach(MIMEText(body, 'plain'))
+    msg.attach(MIMEText(render_template("verify_email.html", {"verification_url": verification_url}), 'html'))
 
     server = smtplib.SMTP(os.getenv("EMAIL_HOST"), int(os.getenv("EMAIL_PORT")))
     server.starttls()
