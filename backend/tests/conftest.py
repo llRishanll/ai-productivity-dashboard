@@ -34,8 +34,8 @@ async def test_user(client):
     send_verification_email.__code__ = fake_send_verification_email.__code__
 
     await client.post("/auth/signup", json=test_user_data)
-    
-    query = users.update().where(users.c.email == test_user_data["email"]).values(is_verified=True)
+
+    query = users.update().where(users.c.email == test_user_data["email"]).values(is_verified=True, role="admin")
     await database.execute(query)
 
     form_data = {
@@ -51,6 +51,9 @@ async def test_user(client):
     await database.execute(users.delete().where(users.c.email == test_user_data["email"]))
 
 async def delete_all_tasks_for_user(token: str):
-    user = await get_current_user(token)
+    user = await get_current_user(["admin"], token=token)
     query = tasks.delete().where(tasks.c.user_id == user["id"])
     await database.execute(query)
+
+def auth_headers(token: str):
+    return {"Authorization": f"Bearer {token}"}

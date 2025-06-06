@@ -3,10 +3,12 @@ import pytest
 from crud import user_crud
 from schemas.user_schema import UserCreate
 from database import database
+from tests.conftest import auth_headers
+
 
 @pytest.mark.asyncio
 async def test_get_me(client, test_user):
-    headers = {"Authorization": f"Bearer {test_user["token"]}"}
+    headers = auth_headers(test_user["token"])
     res = await client.get("/me", headers=headers)
     assert res.status_code == 200
     assert res.json()["email"] == test_user["email"]

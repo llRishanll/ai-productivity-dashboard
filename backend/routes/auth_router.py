@@ -5,11 +5,12 @@ from authlib.integrations.starlette_client import OAuth
 from starlette.config import Config
 from crud.user_crud import get_or_create_user
 from schemas.user_schema import UserCreate, UserSignup
-from utils.security import hash_password, verify_password, create_access_token, get_current_user, create_verification_token, decode_verification_token
+from utils.security import hash_password, verify_password, create_access_token, get_current_user, create_verification_token, decode_verification_token, oauth2_scheme
 from utils.notifications import send_verification_email
 from database import database
 from models.user import users
 from main import limiter
+from datetime import datetime
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -51,6 +52,7 @@ async def signup(user: UserSignup, request: Request):
         name=user.name,
         password_hash=hashed,
         is_verified=False,
+        role="user",  
         picture=""
     )
     await database.execute(insert_query)
@@ -75,7 +77,9 @@ async def verify_email(token: str, request: Request):
     if user["is_verified"]:
         return {"message": "Email already verified"}
 
-    update_query = users.update().where(users.c.email == email).values(is_verified=True)
+    update_query = users.update().where(users.c.email == email).values(
+        is_verified=True, updated_at=datetime.utcnow()
+        )
     await database.execute(update_query)
 
     return {"message": "Email verified successfully"}
@@ -134,5 +138,6 @@ async def auth_callback(request: Request):
 
 @router.get("/me")
 @limiter.limit("10/minute")
-async def get_current_user_data(request: Request, current_user: dict = Depends(get_current_user)):
+async def get_current_user_data(request: Request, token: str = Depends(oauth2_scheme)):
+    current_user = await get_current_user(["user", "admin"], token=token)
     return current_user

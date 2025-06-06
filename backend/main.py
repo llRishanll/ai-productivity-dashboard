@@ -13,6 +13,7 @@ from utils.rate_limiter import limiter
 from routes.auth_router import router as auth_router
 from routes.tasks_router import router as tasks_router
 from routes.ai_router import router as ai_router
+from routes.admin_router import router as admin_router
 
 from scheduler import start_scheduler
 
@@ -57,6 +58,7 @@ app.add_middleware(
 app.include_router(auth_router, tags=["Auth"])
 app.include_router(tasks_router, tags=["Tasks"])
 app.include_router(ai_router, tags=["AI"])
+app.include_router(admin_router, tags=["Admin"])
 
 
 # @app.get("/test-email")

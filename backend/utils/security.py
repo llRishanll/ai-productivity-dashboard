@@ -38,7 +38,7 @@ def decode_verification_token(token: str) -> str:
     payload = jwt.decode(token, secret_key, algorithms=[algorithm])
     return payload.get("sub")
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+async def get_current_user(roles: list, token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid credentials",
@@ -56,7 +56,11 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     user = await database.fetch_one(query)
     if user is None:
         raise credentials_exception
-    
+    if user["role"] not in roles:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Insufficient permissions."
+        )
     if not user["is_verified"]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
