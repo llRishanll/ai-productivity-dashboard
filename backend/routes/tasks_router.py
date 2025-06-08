@@ -7,6 +7,7 @@ from sqlalchemy import desc, asc, or_ ,select, func
 from models.task import tasks
 from database import database
 from main import limiter
+from logging_config import logger
 
 router = APIRouter()
 
@@ -15,22 +16,35 @@ router = APIRouter()
 async def add_task(request: Request, task: TaskIn, token: str = Depends(oauth2_scheme)):
     user = await get_current_user(["user", "admin"], token=token)
     if not user:
+        logger.warning("Unauthorized task creation attempt", ip=request.client.host)
         raise HTTPException(status_code=401, detail="User not authenticated")
-    return await create_task(task, user_id=user["id"])
+    
+    logger.info("Task creation initiated", user_id=user["id"], title=task.title)
+    created_task = await create_task(task, user_id=user["id"])
+    logger.info("Task created successfully", user_id=user["id"], task_id=created_task["id"])
+    
+    return created_task
+
 
 @router.delete("/tasks/delete-completed")
 @limiter.limit("5/minute")
 async def delete_completed_tasks(request: Request, token: str = Depends(oauth2_scheme)):
     user = await get_current_user(["user", "admin"], token=token)
+    
     if not user:
+        logger.warning("Unauthorized attempt to delete completed tasks", ip=request.client.host)
         raise HTTPException(status_code=401, detail="Not authenticated")
     
+    logger.info("Delete completed tasks request received", user_id=user["id"])
+
     query = tasks.delete().where(
         (tasks.c.user_id == user["id"]) &
         (tasks.c.completed == True)
     )
     await database.execute(query)
+    logger.info("Completed tasks deleted", user_id=user["id"])
     return {"message": "All completed tasks deleted."}
+
 
 @router.get("/tasks", response_model=dict)
 @limiter.limit("20/minute")
@@ -46,6 +60,16 @@ async def read_tasks(
     token: str = Depends(oauth2_scheme)
 ):
     user = await get_current_user(["user", "admin"], token=token)
+
+    logger.info("Fetching tasks", user_id=user["id"], filters={
+        "completed": completed,
+        "priority": priority,
+        "search": search,
+        "sort_by": sort_by,
+        "order": order,
+        "limit": limit,
+        "offset": offset
+    })
 
     base_query = tasks.select().where(tasks.c.user_id == user["id"])
 
@@ -75,6 +99,8 @@ async def read_tasks(
     results = await database.fetch_all(paginated_query)
     task_list = [dict(r) for r in results]
 
+    logger.info("Tasks fetched", user_id=user["id"], total=total_count, returned=len(task_list))
+
     return {
         "total_tasks": total_count,
         "limit": limit,
@@ -82,36 +108,60 @@ async def read_tasks(
         "tasks": task_list
     }
 
+
 @router.patch("/tasks/{task_id}", response_model=TaskOut)
 @limiter.limit("10/minute")
 async def patch_task(request: Request, task_id: int, task: TaskUpdate, token: str = Depends(oauth2_scheme)):
     user = await get_current_user(["user", "admin"], token=token)
     if not user:
+        logger.warning("Unauthorized patch attempt", task_id=task_id, ip=request.client.host)
         raise HTTPException(status_code=401, detail="User not authenticated")
+
+    logger.info("Patch request received", task_id=task_id, user_id=user["id"], update_data=task.model_dump())
+
     updated = await update_task(task_id, user["id"], task)
+
     if not updated:
+        logger.warning("Patch failed - Task not found or unauthorized", task_id=task_id, user_id=user["id"])
         raise HTTPException(status_code=404, detail="Task not found or unauthorized")
+
+    if updated["recurring"] and updated["completed"] is True:
+        logger.info("Recurring task triggered", task_id=task_id, user_id=user["id"], recurring=updated["recurring"])
+
+    logger.info("Task patched successfully", task_id=task_id, user_id=user["id"])
     return updated
+
 
 @router.delete("/tasks/{task_id}")
 @limiter.limit("10/minute")
 async def delete_task_route(request: Request, task_id: int, token: str = Depends(oauth2_scheme)):
     user = await get_current_user(["user", "admin"], token=token)
     if not user:
+        logger.warning("Unauthorized task deletion attempt", ip=request.client.host, task_id=task_id)
         raise HTTPException(status_code=401, detail="Not logged in")
+
     deleted = await delete_task(task_id, user_id=user["id"])
+
     if not deleted:
+        logger.warning("Task deletion failed - Not found or unauthorized", user_email=user["email"], task_id=task_id)
         raise HTTPException(status_code=404, detail="Task not found or unauthorized")
+
+    logger.info("Task deleted successfully", user_email=user["email"], task_id=task_id, ip=request.client.host)
     return {"detail": f"Task {task_id} deleted."}
+
 
 @router.get("/tasks/analytics")
 @limiter.limit("10/minute")
-async def task_analytics(request: Request, token:str = Depends(oauth2_scheme)):
+async def task_analytics(request: Request, token: str = Depends(oauth2_scheme)):
     user = await get_current_user(["user", "admin"], token=token)
     if not user:
+        logger.warning("Unauthorized access to task analytics", ip=request.client.host)
         raise HTTPException(status_code=401, detail="Not logged in")
     
     analytics = await get_task_analytics(user_id=user["id"])
     if not analytics:
+        logger.error("Failed to retrieve analytics", user_email=user["email"], ip=request.client.host)
         raise HTTPException(status_code=404, detail="Failed to retrieve analytics for this user")
+    
+    logger.info("Task analytics retrieved", user_email=user["email"], ip=request.client.host)
     return analytics
