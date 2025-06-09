@@ -1,9 +1,33 @@
 import logging
 import structlog
 import sys
+from logging.handlers import RotatingFileHandler
+import os
 
 def setup_logging():
+    os.makedirs("logs", exist_ok=True)  # Ensure logs directory exists
+
     timestamper = structlog.processors.TimeStamper(fmt="iso")
+
+    # File handler with rotation
+    file_handler = RotatingFileHandler(
+        filename="logs/app.log",
+        maxBytes=5 * 1024 * 1024,  # 5 MB
+        backupCount=5,
+        encoding="utf-8"
+    )
+    file_handler.setFormatter(logging.Formatter("%(message)s"))
+    file_handler.setLevel(logging.INFO)
+
+    # Stream handler for console (stdout)
+    stream_handler = logging.StreamHandler(sys.stdout)
+    stream_handler.setFormatter(logging.Formatter("%(message)s"))
+    stream_handler.setLevel(logging.INFO)
+
+    logging.basicConfig(
+        handlers=[file_handler, stream_handler],
+        level=logging.INFO
+    )
 
     structlog.configure(
         processors=[
@@ -19,12 +43,6 @@ def setup_logging():
         logger_factory=structlog.stdlib.LoggerFactory(),
         wrapper_class=structlog.stdlib.BoundLogger,
         cache_logger_on_first_use=True,
-    )
-
-    logging.basicConfig(
-        format="%(message)s",
-        stream=sys.stdout,
-        level=logging.INFO,
     )
 
 logger = structlog.get_logger()
