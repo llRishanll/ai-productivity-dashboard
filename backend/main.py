@@ -14,8 +14,9 @@ from routes.auth_router import router as auth_router
 from routes.tasks_router import router as tasks_router
 from routes.ai_router import router as ai_router
 from routes.admin_router import router as admin_router
-
 from scheduler import start_scheduler
+from logging_config import setup_logging, logger
+setup_logging()
 
 
 # Create tables
@@ -26,12 +27,14 @@ metadata.create_all(bind=engine)
 async def lifespan(app: FastAPI):
     await database.connect()
     start_scheduler()
+    logger.info("TaskMaster AI backend is up and running")
     yield
     await database.disconnect()
 
 # Pass lifespan to FastAPI
 app = FastAPI(lifespan=lifespan)
 
+#Rate Limiting Middleware
 app.state.limiter = limiter
 @app.exception_handler(RateLimitExceeded)
 async def rate_limit_exceeded_handler(request:Request, exc:RateLimitExceeded):
@@ -53,6 +56,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+#Logging middleware
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    logger.info(
+        "Incoming request",
+        method=request.method,
+        path=request.url.path,
+        client=request.client.host
+    )
+
+    response = await call_next(request)
+
+    logger.info(
+        "Completed request",
+        method=request.method,
+        path=request.url.path,
+        status_code=response.status_code
+    )
+
+    return response
+
+
 # Routes
 
 app.include_router(auth_router, tags=["Auth"])
@@ -61,17 +86,5 @@ app.include_router(ai_router, tags=["AI"])
 app.include_router(admin_router, tags=["Admin"])
 
 
-# @app.get("/test-email")
-# def test_email():
-#     fake_tasks = [
-#         {"title": "Finish project", "description": "Due by 5pm"},
-#         {"title": "Submit lab", "description": "Due at midnight"},
-#     ]
-#     send_email("desh2605@mylaurier.ca", fake_tasks)
-#     return {"status": "Email sent"}
 
-# @app.get("/send-test-reminders")
-# async def trigger_reminders():
-#     await send_daily_reminders()
-#     return {"status": "Reminders sent"}
 

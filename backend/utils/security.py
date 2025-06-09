@@ -7,7 +7,7 @@ from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from dotenv import load_dotenv
 from jose import jwt
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import os
 load_dotenv()
 
@@ -25,12 +25,12 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def create_access_token(data: dict, expires_delta: timedelta = timedelta(minutes=expiry)):
     to_encode = data.copy()
-    expire = datetime.utcnow() + expires_delta
+    expire = datetime.now(timezone.utc) + expires_delta
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, secret_key, algorithm)
 
 def create_verification_token(email: str) -> str:
-    expire = datetime.utcnow() + timedelta(minutes=15)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     payload = {"sub": email, "exp": expire}
     return jwt.encode(payload, secret_key, algorithm)
 
