@@ -19,22 +19,21 @@ This is the FastAPI backend for TaskMaster AI — an intelligent productivity ma
 
 ---
 
-## 📁 Project Structure
+## 📁 Backend Structure
 
-backend/
-├── crud/ # CRUD service layer
-├── models/ # SQLAlchemy models
-├── routes/ # API endpoints (auth, tasks, admin)
-├── schemas/ # Pydantic request/response models
-├── templates/ # Email templates (HTML)
-├── tests/ # Test suite (pytest + mocking)
-├── utils/ # Auth, logging, AI, email, etc.
-├── database.py # DB setup
-├── logging_config.py # Structured logging config
-├── scheduler.py # Background job scheduler
-├── main.py # FastAPI app entry
-├── requirements.txt # Python deps
-└── README.md # This file
+- `crud/` — CRUD service layer
+- `models/` — SQLAlchemy models
+- `routes/` — API endpoints (auth, tasks, admin)
+- `schemas/` — Pydantic request/response models
+- `templates/` — HTML email templates
+- `tests/` — Test suite (pytest + mocking)
+- `utils/` — Auth, logging, AI, email, etc.
+- `database.py` — DB setup
+- `logging_config.py` — Structured logging config
+- `scheduler.py` — Background job scheduler
+- `main.py` — FastAPI app entry
+- `requirements.txt` — Python dependencies
+- `README.md` — You're here
 
 ---
 
@@ -64,7 +63,7 @@ EMAIL_PASS=your-app-password
 
 # Rate Limiting
 LIMITER=True
-
+```
 ---
 
 ## 🧪 Running Tests

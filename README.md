@@ -26,11 +26,10 @@
 
 ## 🛠️ Project Structure
 
-.
-├── backend/ # FastAPI backend with AI, auth, database, logging, and tests
-├── frontend/ # React frontend (in progress)
-├── .github/ # GitHub Actions workflow for CI
-└── README.md # This file
+- `backend/` — FastAPI backend with AI, auth, database, logging, and tests  
+- `frontend/` — React frontend (in progress)  
+- `.github/` — GitHub Actions workflow for CI  
+- `README.md` — This file
 
 ---
 
