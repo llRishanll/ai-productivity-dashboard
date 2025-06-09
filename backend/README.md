@@ -67,10 +67,10 @@ LIMITER=True
 ---
 
 ## 🧪 Running Tests
-
+```
 cd backend
 pytest --cov=.
-
+```
 ---
 
 ## 🪵 Logging
