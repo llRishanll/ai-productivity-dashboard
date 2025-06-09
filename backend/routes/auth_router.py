@@ -11,7 +11,7 @@ from database import database
 from models.user import users
 from main import limiter
 from logging_config import logger
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -62,7 +62,7 @@ async def signup(user: UserSignup, request: Request):
     user_id = await database.execute(insert_query)
 
     token = create_verification_token(user.email)
-    send_verification_email(user.email, token)
+    await send_verification_email(user.email, token)
 
     logger.info("User signed up successfully", email=user.email, user_id=user_id)
     return {"message": "User created. Please verify your email."}
@@ -91,7 +91,7 @@ async def verify_email(token: str, request: Request):
         return {"message": "Email already verified"}
 
     update_query = users.update().where(users.c.email == email).values(
-        is_verified=True, updated_at=datetime.utcnow()
+        is_verified=True, updated_at=datetime.now(timezone.utc)
     )
     await database.execute(update_query)
 
@@ -114,7 +114,7 @@ async def resend_verification(request: Request, email: str):
         raise HTTPException(status_code=400, detail="User already verified")
 
     token = create_verification_token(user["id"])
-    send_verification_email(user["email"], token)
+    await send_verification_email(user["email"], token)
 
     logger.info("Verification email resent", email=email)
     return {"message": "Verification email resent"}

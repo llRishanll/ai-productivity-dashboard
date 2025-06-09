@@ -4,7 +4,7 @@ from models.user import users
 from models.task import tasks
 from database import database
 from sqlalchemy import select, func, or_
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import Request
 from logging_config import logger
 
@@ -143,7 +143,7 @@ async def promote_user_to_admin(
 
     update_query = users.update().where(users.c.id == user_id).values(
         role="admin",
-        updated_at=datetime.utcnow()
+        updated_at=datetime.now(timezone.utc)
     )
     await database.execute(update_query)
 
