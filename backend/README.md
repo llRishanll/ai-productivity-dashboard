@@ -9,11 +9,11 @@ This is the FastAPI backend for TaskMaster AI — an intelligent productivity ma
 ## ⚙️ Stack
 
 - **FastAPI** – Async Python web framework
-- **SQLite (PostgreSQL soon)** – Lightweight dev database
+- **PostgreSQL** – Production-ready relational DB
 - **SQLAlchemy + Databases** – Async ORM
 - **JWT Auth** – With email verification + Google OAuth
 - **OpenAI API** – For smart task generation and planning
-- **Pytest** – 93% test coverage with mocking
+- **Pytest** – 100% test coverage
 - **Structlog** – JSON logs with rotation
 - **SlowAPI** – Request rate limiting
 
@@ -21,23 +21,30 @@ This is the FastAPI backend for TaskMaster AI — an intelligent productivity ma
 
 ## 📁 Backend Structure
 
-- `crud/` — CRUD service layer
-- `models/` — SQLAlchemy models
-- `routes/` — API endpoints (auth, tasks, admin)
-- `schemas/` — Pydantic request/response models
-- `templates/` — HTML email templates
-- `tests/` — Test suite (pytest + mocking)
-- `utils/` — Auth, logging, AI, email, etc.
-- `database.py` — DB setup
-- `logging_config.py` — Structured logging config
-- `scheduler.py` — Background job scheduler
-- `main.py` — FastAPI app entry
-- `requirements.txt` — Python dependencies
-- `README.md` — You're here
+```
+backend/
+├── crud/               # Service layer for DB logic
+├── models/             # SQLAlchemy model definitions
+├── routes/             # FastAPI endpoints (auth, tasks, admin)
+├── schemas/            # Pydantic models
+├── templates/          # HTML templates for email
+├── tests/              # Test suite using Pytest
+├── utils/              # Helper modules: email, AI, auth, etc.
+├── main.py             # FastAPI entry point
+├── database.py         # DB setup and query wrappers
+├── scheduler.py        # Background job scheduler
+├── logging_config.py   # JSON log formatter + rotation
+├── requirements.txt    # Backend dependencies
+├── Dockerfile          # Container instructions
+├── .dockerignore
+└── README.md           # You're here
+```
 
 ---
 
 ## 🌐 Environment Variables
+
+`.env` or `.env.test`:
 
 ```env
 # Frontend
@@ -64,24 +71,21 @@ EMAIL_PASS=your-app-password
 # Rate Limiting
 LIMITER=True
 ```
+
 ---
 
-## 🧪 Running Tests
-```
+## 🧪 Run Tests (Local or Docker)
+
+### Locally:
+```bash
 cd backend
 pytest --cov=.
 ```
----
 
-## 🪵 Logging
-
-Structured logs with structlog
-
-Logged to console + logs/app.log
-
-Rotation via RotatingFileHandler
-
-Used across auth, tasks, admin, and scheduler
+### With Docker:
+```bash
+docker-compose run --rm test-runner
+```
 
 ---
 
@@ -89,11 +93,11 @@ Used across auth, tasks, admin, and scheduler
 
 | Feature        | Endpoint               | Description                           |
 | -------------- | ---------------------- | ------------------------------------- |
-| AI Generation  | `/tasks/ai-generate`   | Converts user input → structured task |
-| Prioritization | `/tasks/ai-prioritize` | Ranks all tasks by urgency            |
-| Daily Plan     | `/tasks/ai-daily-plan` | Builds today’s optimized task plan    |
-| Summary        | `/tasks/ai-summary`    | Weekly overview of pending tasks      |
-| Week Plan      | `/tasks/ai-week-plan`  | Plans next 7 days from task list      |
+| AI Generation  | `/tasks/ai-generate`   | Converts vague input → structured task|
+| Prioritization | `/tasks/ai-prioritize` | Ranks tasks by urgency                |
+| Daily Plan     | `/tasks/ai-daily-plan` | Builds today’s task plan              |
+| Summary        | `/tasks/ai-summary`    | Generates a task workload summary     |
+| Week Plan      | `/tasks/ai-week-plan`  | Plans next 7 days                     |
 
 ---
 
@@ -103,14 +107,14 @@ Used across auth, tasks, admin, and scheduler
 | ------------------- | --------------------------------- | ------------------------------ |
 | Email Signup/Login  | `/auth/signup`, `/auth/login`     | JWT-based authentication       |
 | Google OAuth Login  | `/auth/google-login`, `/callback` | Login using Google credentials |
-| Email Verification  | `/auth/verify-email`              | Verifies user's email address  |
-| Resend Verification | `/resend-verification`            | Resend confirmation email      |
+| Email Verification  | `/auth/verify-email`              | Confirms email before login    |
+| Resend Verification | `/resend-verification`            | Sends confirmation email again |
 | Get Current User    | `/me`                             | Fetches logged-in user details |
 
 ---
 
 ## ✅ Status
 
-✅ Auth | ✅ Google Login | ✅ Email Verification
-✅ Logging | ✅ Testing | ✅ Pagination
-🔄 PostgreSQL | 🔄 Docker | 🔄 AWS Deployment
+✅ Auth | ✅ Google OAuth | ✅ Email Verification | ✅ Task CRUD |
+✅ AI Features(OpenAI) | ✅ Role-based Access | ✅ Logging | ✅ PostgreSQL | ✅ Docker | 
+✅ 93% Pytest Coverage | 🔄 AWS Deployment

@@ -1,14 +1,18 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
+if "PYTEST_CURRENT_TEST" in os.environ:
+    load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env.test")
+else:
+    load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
 from fastapi import FastAPI,Request
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from starlette.responses import JSONResponse
 from contextlib import asynccontextmanager
-from database import database, engine, metadata
 from starlette.middleware.sessions import SessionMiddleware
 from fastapi.middleware.cors import CORSMiddleware
-load_dotenv()
+from database import engine, metadata, database
 from utils.rate_limiter import limiter
 from routes.auth_router import router as auth_router
 from routes.tasks_router import router as tasks_router

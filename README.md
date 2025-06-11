@@ -3,7 +3,7 @@
 **An AI-powered productivity dashboard that helps you generate, organize, prioritize, and plan your tasks — intelligently.**
 
 ## 🔗 Live Demo
-[taskmaster-ai.com](https://taskmaster-ai.com) 
+[taskmaster-ai.com](https://taskmaster-ai.com)
 
 ---
 
@@ -26,41 +26,34 @@
 
 ## 🛠️ Project Structure
 
-- `backend/` — FastAPI backend with AI, auth, database, logging, and tests  
-- `frontend/` — React frontend (in progress)  
-- `.github/` — GitHub Actions workflow for CI  
-- `README.md` — This file
+```
+.
+├── backend/               # FastAPI backend (see details below)
+├── frontend/              # React frontend (WIP)
+├── docker-compose.yml     # Multi-service Docker setup
+├── .env                   # Env vars for dev
+├── .env.test              # Env vars for test runs
+├── .gitignore
+└── README.md              # This file
+```
 
 ---
 
-## ✅ Backend Highlights
+## 📦 Dockerized Setup
 
-- FastAPI + SQLite (PostgreSQL coming soon)
-- AI task tools with OpenAI integration
-- JWT authentication with Google OAuth
-- Email verification with Gmail SMTP
-- Full test suite (Pytest + Coverage)
-- CI pipeline with GitHub Actions + Codecov badge
-- Structured JSON logging with file rotation
-- Rate limiting and admin-only routes
+```bash
+# Build and run all services
+docker-compose up --build
 
----
-
-## 🧪 Test Coverage
-
-![Coverage](https://codecov.io/gh/llRishanll/ai-productivity-dashboard/branch/dev/graph/badge.svg)
+# Run backend tests using test-runner container
+docker-compose run --rm test-runner
+```
 
 ---
 
-## 🚧 Frontend (WIP)
-- React + Tailwind UI
-- Responsive layout with dashboard pages
-- View Tasks, Add Task, Profile, Landing Page
+## 📋 TODO
 
----
-
-## 🗺️ Coming Soon
-
-- PostgreSQL Migration
-- Dockerization (`docker-compose`)
-- Full AWS deployment (EC2, RDS, SES, S3)
+- ✅ PostgreSQL Integration
+- ✅ Full Docker Support
+- 🔄 Frontend Completion (React + Tailwind)
+- 🔄 AWS Deployment (EC2, RDS, SES, S3)

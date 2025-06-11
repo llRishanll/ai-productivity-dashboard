@@ -2,8 +2,8 @@ from openai import OpenAI
 from datetime import date
 import json,os,re
 from dotenv import load_dotenv
-
-load_dotenv()
+from pathlib import Path
+load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
 
 def get_openai_client():
     from os import getenv
@@ -19,20 +19,20 @@ def prioritize_tasks(tasks: list[dict]) -> str:
     )
 
     prompt = (
-    "You are a productivity AI assistant. Your task is to analyze the user's task list "
-    "and classify each task's priority as 'High', 'Medium', or 'Low'.\n\n"
-    "Classification should be based on:\n"
-    "- Urgency (e.g. due soon, time-sensitive)\n"
-    "- Importance (e.g. critical for goals, impact level)\n\n"
-    "Respond ONLY in valid JSON using this exact format:\n"
+    "You are a productivity AI assistant. Analyze the user's full task list and assign a priority level "
+    "('High', 'Medium', or 'Low') to **each task title** based on:\n"
+    "- Urgency (e.g., due soon, deadlines approaching)\n"
+    "- Importance (e.g., alignment with goals, potential impact)\n\n"
+    "Re-evaluate **all** tasks in context of the full list and update their priority levels **if needed**. "
+    "Use consistent judgment across tasks and assume the user wants an optimized prioritization plan.\n\n"
+    "Respond strictly in valid JSON using the **task title only** as keys:\n"
     "{\n"
-    "  \"Task Title One\": \"High\",\n"
-    "  \"Task Title Two\": \"Low\"\n"
+    "  \"Write project proposal\": \"High\",\n"
+    "  \"Organize email inbox\": \"Low\"\n"
     "}\n\n"
-    "Input task list:\n"
+    "Task list:\n"
     f"{task_text}"
 )
-
 
     response = client.chat.completions.create(
         model = "gpt-3.5-turbo",
@@ -40,7 +40,7 @@ def prioritize_tasks(tasks: list[dict]) -> str:
         temperature = 0.7,
         max_tokens = 300,
     )
-
+    
     try:
         priority_map = json.loads(response.choices[0].message.content)
     except json.JSONDecodeError:
@@ -53,7 +53,7 @@ def prioritize_tasks(tasks: list[dict]) -> str:
     result = []
     for task in tasks:
         title = task["title"]
-        key = f'{task["title"]}: {task["description"]}'
+        key = task["title"]
         if key in priority_map:
             result.append({
                 "id": task["id"],
