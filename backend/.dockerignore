@@ -9,17 +9,9 @@ __pycache__/
 .coverage
 htmlcov/
 
-# SQLite DB
-tasks.db
-*.sqlite3
-
 # Logs
 logs/
 *.log
-
-# Local env files
-.env
-.env.*
 
 # Virtual environment
 venv/

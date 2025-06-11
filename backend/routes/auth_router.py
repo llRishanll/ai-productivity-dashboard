@@ -14,7 +14,8 @@ from logging_config import logger
 from datetime import datetime, timezone
 import os
 from dotenv import load_dotenv
-load_dotenv()
+from pathlib import Path
+load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
 
 router = APIRouter()
 
@@ -62,7 +63,7 @@ async def signup(user: UserSignup, request: Request):
     user_id = await database.execute(insert_query)
 
     token = create_verification_token(user.email)
-    await send_verification_email(user.email, token)
+    send_verification_email(user.email, token)
 
     logger.info("User signed up successfully", email=user.email, user_id=user_id)
     return {"message": "User created. Please verify your email."}
@@ -114,7 +115,7 @@ async def resend_verification(request: Request, email: str):
         raise HTTPException(status_code=400, detail="User already verified")
 
     token = create_verification_token(user["id"])
-    await send_verification_email(user["email"], token)
+    send_verification_email(user["email"], token)
 
     logger.info("Verification email resent", email=email)
     return {"message": "Verification email resent"}

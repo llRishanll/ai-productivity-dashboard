@@ -9,7 +9,8 @@ from dotenv import load_dotenv
 from jose import jwt
 from datetime import datetime, timedelta, timezone
 import os
-load_dotenv()
+from pathlib import Path
+load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
