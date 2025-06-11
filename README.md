@@ -39,7 +39,7 @@
 
 ---
 
-## 📦 Dockerized Setup
+## 🐋 Dockerized Setup
 
 ```bash
 # Build and run all services

@@ -13,7 +13,7 @@ This is the FastAPI backend for TaskMaster AI — an intelligent productivity ma
 - **SQLAlchemy + Databases** – Async ORM
 - **JWT Auth** – With email verification + Google OAuth
 - **OpenAI API** – For smart task generation and planning
-- **Pytest** – 100% test coverage
+- **Pytest** – 93% test coverage
 - **Structlog** – JSON logs with rotation
 - **SlowAPI** – Request rate limiting
 

@@ -7,15 +7,24 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      PYTEST_CURRENT_TEST: "True"
+      LIMITER: "False"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "taskmaster_test"
+      POSTGRES_HOST: "test-db"
+      POSTGRES_PORT: "5432"
+
 
     steps:
+      
       - uses: actions/checkout@v3
-
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: 3.12
-
+      
       - name: Install dependencies
         run: |
           python -m venv venv
