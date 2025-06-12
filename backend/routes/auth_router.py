@@ -5,8 +5,8 @@ from authlib.integrations.starlette_client import OAuth
 from starlette.config import Config
 from crud.user_crud import get_or_create_user
 from schemas.user_schema import UserCreate, UserSignup
-from utils.security import hash_password, verify_password, create_access_token, get_current_user, create_verification_token, decode_verification_token, oauth2_scheme
-from utils.notifications import send_verification_email
+from utils.security import hash_password, verify_password, create_access_token, get_current_user, create_verification_token, decode_verification_token, create_reset_token, decode_reset_token, oauth2_scheme
+from utils.notifications import send_verification_email, send_reset_email
 from database import database
 from models.user import users
 from main import limiter
@@ -114,12 +114,11 @@ async def resend_verification(request: Request, email: str):
         logger.info("Resend skipped - User already verified", email=email)
         raise HTTPException(status_code=400, detail="User already verified")
 
-    token = create_verification_token(user["id"])
+    token = create_verification_token(user["email"])
     send_verification_email(user["email"], token)
 
     logger.info("Verification email resent", email=email)
     return {"message": "Verification email resent"}
-
 
 @router.post("/auth/login")
 @limiter.limit("5/minute")
@@ -141,6 +140,54 @@ async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends
 
     logger.info("Login successful", user_id=user["id"], email=user["email"], ip=request.client.host)
     return {"access_token": token, "token_type": "bearer"}
+
+@router.post("/auth/forgot-password")
+@limiter.limit("2/hour")
+async def request_password_reset(request: Request, email: str):
+    logger.info("Password reset requested", email=email, ip=request.client.host)
+
+    user = await database.fetch_one(users.select().where(users.c.email == email))
+    if not user:
+        logger.warning("User not found during password reset request", email=email)
+        return {"message": "If this email is registered and verified, a reset link has been sent."}
+
+    if not user["is_verified"]:
+        logger.warning("Unverified user attempted password reset", email=email)
+        raise HTTPException(status_code=403, detail="Email not verified")
+
+    token = create_reset_token(user["email"])
+    send_reset_email(email, token)
+
+    logger.info("Password reset link sent", email=email)
+    return {"message": "If this email is registered and verified, a reset link has been sent."}
+
+@router.post("/auth/reset-password")
+@limiter.limit("5/minute")
+async def reset_password(token: str, new_password: str, request: Request):
+    logger.info("Password reset attempt", token=token, ip=request.client.host)
+    try:
+        email = decode_reset_token(token)
+    except Exception as e:
+        logger.warning("Password reset failed - Invalid or expired token", token=token, error=str(e))
+        raise HTTPException(status_code=400, detail="Invalid or expired token")
+
+    query = users.select().where(users.c.email == email)
+    user = await database.fetch_one(query)
+
+    if not user:
+        logger.warning("Password reset failed - User not found", email=email)
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if not user["is_verified"]:
+        logger.warning("Password reset blocked - email not verified", email=email)
+        raise HTTPException(status_code=403, detail="Email not verified")
+    
+    hashed_password = hash_password(new_password)
+    query = users.update().where(users.c.email == email).values(password_hash=hashed_password, updated_at=datetime.now(timezone.utc))
+    await database.execute(query)
+
+    logger.info("Password reset successful", email=email)
+    return {"message": "Password has been reset successfully."}
 
 
 @router.get("/auth/google-login")

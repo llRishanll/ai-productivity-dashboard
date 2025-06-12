@@ -15,6 +15,8 @@ load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 secret_key = os.getenv("SECRET_KEY", "dev-secret")
+verification_secret_key = os.getenv("VERIFICATION_SECRET_KEY", "dev-verification-secret")
+reset_secret_key = os.getenv("RESET_SECRET_KEY", "dev-reset-secret")
 algorithm=os.getenv("ALGORITHM", "HS256")
 expiry=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60))
 
@@ -31,12 +33,20 @@ def create_access_token(data: dict, expires_delta: timedelta = timedelta(minutes
     return jwt.encode(to_encode, secret_key, algorithm)
 
 def create_verification_token(email: str) -> str:
-    expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=5)
     payload = {"sub": email, "exp": expire}
-    return jwt.encode(payload, secret_key, algorithm)
+    return jwt.encode(payload, verification_secret_key, algorithm)
 
 def decode_verification_token(token: str) -> str:
-    payload = jwt.decode(token, secret_key, algorithms=[algorithm])
+    payload = jwt.decode(token, verification_secret_key, algorithms=[algorithm])
+    return payload.get("sub")
+
+def create_reset_token(email: str) -> str:
+    payload = {"sub": email, "exp": datetime.now(timezone.utc) + timedelta(minutes=5)}
+    return jwt.encode(payload, reset_secret_key, algorithm=algorithm)
+
+def decode_reset_token(token: str) -> str:
+    payload = jwt.decode(token, reset_secret_key, algorithms=[algorithm])
     return payload.get("sub")
 
 async def get_current_user(roles: list, token: str = Depends(oauth2_scheme)):
