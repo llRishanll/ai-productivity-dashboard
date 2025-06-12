@@ -28,7 +28,9 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   test-runner:
-    image: ai-productivity-dashboard
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: taskmaster-test-runner
     depends_on:
       - test-db
@@ -40,7 +42,8 @@ services:
     volumes:
       - ./backend:/app
     command: >
-      sh -c "sleep 3 && pytest tests/"
+      sh -c "sleep 3 && cd backend && pytest --cov=. --cov-report=xml"
+
 
   test-db:
     image: postgres:15

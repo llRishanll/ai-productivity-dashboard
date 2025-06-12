@@ -7,39 +7,22 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      PYTEST_CURRENT_TEST: "True"
-      LIMITER: "False"
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "postgres"
-      POSTGRES_DB: "taskmaster_test"
-      POSTGRES_HOST: "test-db"
-      POSTGRES_PORT: "5432"
 
+    services:
+      docker:
+        image: docker:20.10.7
+        options: --privileged
 
     steps:
-      
-      - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.12
-      
-      - name: Install dependencies
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install -r backend/requirements.txt
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-      - name: Run tests with coverage
+      - name: Set up Docker Compose
         run: |
-          source venv/bin/activate
-          cd backend
-          pytest --cov=. --cov-report=xml
+          docker-compose -f docker-compose.yml up --build --abort-on-container-exit test-runner
 
-      - name: Upload coverage to Codecov
+      - name: Upload test coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
           flags: backend
           working-directory: backend
-          
