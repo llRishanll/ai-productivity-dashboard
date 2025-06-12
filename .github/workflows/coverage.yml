@@ -12,7 +12,12 @@ jobs:
       docker:
         image: docker:20.10.7
         options: --privileged
-
+    
+    env:
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
