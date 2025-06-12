@@ -19,7 +19,7 @@ jobs:
 
       - name: Set up Docker Compose
         run: |
-          docker-compose -f docker-compose.yml up --build --abort-on-container-exit test-runner
+          docker compose -f docker-compose.yml up --build --abort-on-container-exit test-runner
 
       - name: Upload test coverage to Codecov
         uses: codecov/codecov-action@v3
