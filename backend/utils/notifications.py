@@ -56,13 +56,28 @@ async def send_daily_reminders():
 def send_verification_email(email: str, token: str):
     verification_url = f"{os.getenv('FRONTEND_URL')}/verify-email?token={token}"
     subject = "Verify your email"
-    body = f"Click the link to verify your account: {verification_url}"
 
     msg = MIMEMultipart()
     msg['From'] = os.getenv("EMAIL_USER")
     msg['To'] = email
     msg['Subject'] = subject
     msg.attach(MIMEText(render_template("verify_email.html", {"verification_url": verification_url}), 'html'))
+
+    server = smtplib.SMTP(os.getenv("EMAIL_HOST"), int(os.getenv("EMAIL_PORT")))
+    server.starttls()
+    server.login(os.getenv("EMAIL_USER"), os.getenv("EMAIL_PASS"))
+    server.send_message(msg)
+    server.quit()
+
+def send_reset_email(email: str, token: str):
+    reset_url = f"{os.getenv('FRONTEND_URL')}/reset-password?token={token}"
+    subject = "Reset your password"
+
+    msg = MIMEMultipart()
+    msg['From'] = os.getenv("EMAIL_USER")
+    msg['To'] = email
+    msg['Subject'] = subject
+    msg.attach(MIMEText(render_template("reset_password.html", {"reset_url": reset_url}), 'html'))
 
     server = smtplib.SMTP(os.getenv("EMAIL_HOST"), int(os.getenv("EMAIL_PORT")))
     server.starttls()
