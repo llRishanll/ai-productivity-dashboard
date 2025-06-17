@@ -1,9 +1,8 @@
 import{BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { useEffect } from 'react'
-import Home from './pages/Home'
+import Landing from './pages/Landing'
 import Login from './pages/Login'
 import ViewTasks from './pages/ViewTasks'
-import AddTask from './pages/AddTasks'
 import Profile from './pages/Profile'
 import ProtectedRoute from './components/ProtectedRoute'
 
@@ -20,9 +19,8 @@ export default function App() {
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/" element={<ProtectedRoute><Home/></ProtectedRoute>} />
+        <Route path="/" element={<ProtectedRoute><Landing /></ProtectedRoute>} />
         <Route path="/view-tasks" element={<ProtectedRoute><ViewTasks /></ProtectedRoute>} />
-        <Route path="/add-tasks" element={<ProtectedRoute><AddTask /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
       </Routes>
     </Router>

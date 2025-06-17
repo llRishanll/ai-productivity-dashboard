@@ -1,46 +1,43 @@
-import useAuth from "../hooks/useAuth";
-import { logout } from "../utils/auth";
-const baseUrl = import.meta.env.VITE_APP_URL
+import { Link, useLocation } from "react-router-dom";
 
 export default function Header() {
-    const {user} = useAuth()
+  const location = useLocation();
+  const isLandingPage = location.pathname === "/";
 
-    return(
-        <header className="fixed top-0 left-0 w-full z-50 px-6 py-7 bg-[#121f17]/80 backdrop-blur-xs flex justify-between items-center">
-        <a href={baseUrl + "/"} className="text-white">
-          <img
-          src="/src/assets/logo.png"
-          alt="TaskMaster AI"
-          className="h-9 w-auto object-contain hover:scale-105 transition-transform"
-          />
-        </a>
+  return (
+    <header
+      className={`${
+        isLandingPage ? "" : "sticky top-0 z-50"
+      } bg-[#213527] text-white w-full px-6 sm:px-10 lg:px-20 xl:px-24 py-7`}
+    >
+      <div className="flex items-center justify-between w-full">
+        {/* Logo */}
+        <div className="text-yellow-700 font-bold text-2xl">LOGO</div>
 
-      {user && (
-        <nav className="flex items-center gap-6">
-          <a href={baseUrl + "/"} className="text-white text-md font-medium hover:text-yellow-700 hover:scale-110 transition">
-            Home
-          </a>
-          <a href={baseUrl + "/add-tasks"} className="text-white text-md font-medium hover:text-yellow-700 hover:scale-110 transition">
-            Add Tasks
-          </a>
-          <a href={baseUrl + "/view-tasks"} className="text-white text-md font-medium hover:text-yellow-700 hover:scale-110 transition">
-            View Tasks
-          </a>
-          <a href={baseUrl + "/profile"} className="text-white hover:text-yellow-700 transition">
-            <svg width="24" height="24" fill="currentColor" className="hover:scale-110 transition-transform">
-              <path d="M12 14c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4Zm0-2c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2Z" />
-              <path d="M17.93 20.06A9.95 9.95 0 0 0 22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 3.3 1.61 6.21 4.07 8.06C7.13 21.37 9.48 22 12 22s4.87-.63 5.93-1.94ZM7.5 18.06A7.96 7.96 0 0 1 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8c0 2.32-1 4.41-2.5 6.06C16 16.27 14.11 15 12 15s-4 1.27-4.5 3.06Z" />
-            </svg>
-          </a>
-          <a
-            onClick={logout}
-            className="text-md text-red-400 font-medium hover:text-red-600 hover:scale-110 transition cursor-pointer"
-          >
-            Logout
-          </a>
+        {/* Navigation */}
+        <nav className="hidden md:flex space-x-8 text-lg font-inter font-light absolute left-1/2 -translate-x-1/2">
+          <Link to="/features" className="hover:text-yellow-700 hover:scale-105 transition">Features</Link>
+          <Link to="/pricing" className="hover:text-yellow-700 hover:scale-105 transition">Pricing</Link>
+          <Link to="/resources" className="hover:text-yellow-700 hover:scale-105 transition">Resources</Link>
+          <Link to="/about" className="hover:text-yellow-700 hover:scale-105 transition">About Us</Link>
         </nav>
-      )}
+
+        {/* Right Side */}
+        <div className="flex items-center space-x-4 text-md">
+          <Link to="/login" className="flex items-center gap-1 hover:scale-105 transition hover:text-yellow-700">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M17.084 15.812a7 7 0 1 0-10.168 0A6 6 0 0 1 12 13a6 6 0 0 1 5.084 2.812M12 23.728l-6.364-6.364a9 9 0 1 1 12.728 0zM12 12a3 3 0 1 1 0-6a3 3 0 0 1 0 6" />
+            </svg>
+            <span className="text-lg font-inter font-light">Login</span>
+          </Link>
+          <Link
+            to="/signup"
+            className="bg-yellow-700 text-white text-lg font-inter px-6 py-1.5 rounded-md hover:scale-105 hover:bg-yellow-800 transition"
+          >
+            Get Started
+          </Link>
+        </div>
+      </div>
     </header>
   );
 }
-    
