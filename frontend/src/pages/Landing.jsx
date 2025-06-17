@@ -3,6 +3,7 @@ import Hero from "../components/Hero";
 import Features from "../components/Features";
 import Features2 from "../components/Features2";
 import Stats from "../components/Stats";
+import CallToAction from "../components/CallToAction";
 
 const baseUrl = import.meta.env.VITE_APP_URL;
 
@@ -23,7 +24,8 @@ export default function Landing() {
       {/* Stats Section */}
       <Stats />
 
-      {/* Footer Section */}
+      {/* Call to Action Section */}
+      <CallToAction />
     </div>
   );
 }
