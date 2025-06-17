@@ -4,6 +4,7 @@ import Features from "../components/Features";
 import Features2 from "../components/Features2";
 import Stats from "../components/Stats";
 import CallToAction from "../components/CallToAction";
+import Footer from "../components/Footer";
 
 const baseUrl = import.meta.env.VITE_APP_URL;
 
@@ -26,6 +27,9 @@ export default function Landing() {
 
       {/* Call to Action Section */}
       <CallToAction />
+
+      {/* Footer Section */}
+      <Footer />
     </div>
   );
 }
