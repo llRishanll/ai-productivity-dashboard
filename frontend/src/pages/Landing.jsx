@@ -10,7 +10,7 @@ const baseUrl = import.meta.env.VITE_APP_URL;
 
 export default function Landing() {
   return (
-    <div className="min-h-screen w-full bg-[#1e3226] text-white overflow-x-hidden">
+    <div className="relative min-h-screen w-full bg-[#1e3226] text-white">
       {/* Sticky header */}
       <Header />
 
