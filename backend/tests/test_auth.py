@@ -4,6 +4,7 @@ from crud import user_crud
 from schemas.user_schema import UserCreate
 from database import database
 from tests.conftest import auth_headers
+from unittest.mock import patch
 
 
 @pytest.mark.asyncio
