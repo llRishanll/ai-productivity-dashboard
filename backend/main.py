@@ -1,11 +1,13 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-if "PYTEST_CURRENT_TEST" in os.environ:
-    load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env.test")
-else:
-    load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
+if os.getenv("RUNNING_IN_DOCKER") != "true":
+    if os.getenv("PYTEST_CURRENT_TEST"):
+        load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env.test", override=True)
+    else:
+        load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env", override=True)
 from fastapi import FastAPI,Request
+from fastapi.staticfiles import StaticFiles
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from starlette.responses import JSONResponse
@@ -81,6 +83,8 @@ async def log_requests(request: Request, call_next):
 
     return response
 
+# Mount static files
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Routes
 
