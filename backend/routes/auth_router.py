@@ -1,10 +1,10 @@
-from fastapi import APIRouter, Request,HTTPException,Depends
+from fastapi import APIRouter, Request,HTTPException,Depends, Body, UploadFile, File
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import RedirectResponse
 from authlib.integrations.starlette_client import OAuth
 from starlette.config import Config
 from crud.user_crud import get_or_create_user
-from schemas.user_schema import UserCreate, UserSignup
+from schemas.user_schema import UserCreate, UserSignup, UserUpdate
 from utils.security import hash_password, verify_password, create_access_token, get_current_user, create_verification_token, decode_verification_token, create_reset_token, decode_reset_token, oauth2_scheme
 from utils.notifications import send_verification_email, send_reset_email
 from database import database
@@ -12,7 +12,7 @@ from models.user import users
 from main import limiter
 from logging_config import logger
 from datetime import datetime, timezone
-import os
+import os, shutil, uuid
 from dotenv import load_dotenv
 from pathlib import Path
 load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
@@ -38,6 +38,9 @@ oauth.register(
         'scope': 'email profile'
     }
 )
+
+UPLOAD_DIR = "static/uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 @router.post("/auth/signup", status_code=201)
 @limiter.limit("3/minute")  
@@ -134,7 +137,9 @@ async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends
 
     if not user["is_verified"]:
         logger.warning("Login blocked - email not verified", email=form_data.username, ip=request.client.host)
-        raise HTTPException(status_code=403, detail="Email not verified")
+        token = create_verification_token(form_data.username)
+        send_verification_email(form_data.username, token)
+        raise HTTPException(status_code=403, detail="Email not verified. Please check your inbox.")
 
     token = create_access_token(data={"sub": user["email"]})
 
@@ -225,3 +230,70 @@ async def get_current_user_data(request: Request, token: str = Depends(oauth2_sc
     current_user = await get_current_user(["user", "admin"], token=token)
     logger.info("Fetched current user data", user_id=current_user["id"], email=current_user["email"], ip=request.client.host)
     return current_user
+
+@router.patch("/me")
+@limiter.limit("5/minute")
+async def update_user_data(
+    request: Request,
+    data: UserUpdate,
+    token: str = Depends(oauth2_scheme)    
+):
+    current_user = await get_current_user(["user", "admin"], token=token)
+    logger.info("Profile update attempt", user_id=current_user["id"], email=current_user["email"], ip=request.client.host)
+
+    update_data = data.model_dump(exclude_unset=True)
+
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No valid fields provided for update")
+
+    # Check for email change
+    if "email" in update_data and update_data["email"] != current_user["email"]:
+        email_check_query = users.select().where(users.c.email == update_data["email"])
+        existing_user = await database.fetch_one(email_check_query)
+
+        if existing_user:
+            raise HTTPException(status_code=409, detail="Email already in use")
+
+        update_data["is_verified"] = False  # Reverify if email changed
+
+    update_data["updated_at"] = datetime.now(timezone.utc)
+
+    update_query = users.update().where(users.c.id == current_user["id"]).values(**update_data)
+    await database.execute(update_query)
+
+    logger.info("Profile updated successfully", user_id=current_user["id"])
+    return {"message": "Profile updated"}
+
+@router.post("/upload-profile-picture")
+async def upload_profile_picture(
+    file: UploadFile = File(...),
+    token: str = Depends(oauth2_scheme)
+):
+    user = await get_current_user(["user", "admin"], token=token)
+
+    if not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="Only image files are allowed.")
+
+    # 1. Delete previous image if exists
+    old_image_url = user["picture"]
+    if old_image_url:
+        old_image_path = os.path.join(".", old_image_url.lstrip("/"))  # Remove leading slash
+        if os.path.commonpath([os.path.abspath(old_image_path), os.path.abspath(UPLOAD_DIR)]) == os.path.abspath(UPLOAD_DIR):
+            if os.path.exists(old_image_path):
+                os.remove(old_image_path)
+
+    # 2. Save new image
+    ext = os.path.splitext(file.filename)[1]
+    unique_filename = f"user_{user['id']}_{uuid.uuid4().hex}{ext}"
+    file_path = os.path.join(UPLOAD_DIR, unique_filename)
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    image_url = f"/static/uploads/{unique_filename}"  # This is the public path
+
+    # 3. Update DB
+    update_query = users.update().where(users.c.id == user["id"]).values(picture=image_url)
+    await database.execute(update_query)
+
+    return {"message": "Upload successful", "url": image_url}

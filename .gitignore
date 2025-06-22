@@ -27,6 +27,7 @@ backend/.env
 # SQLite DB (project-wide)
 tasks.db
 backend/tasks.db
+static/
 
 # Python cache
 __pycache__/

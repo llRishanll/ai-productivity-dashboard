@@ -13,7 +13,8 @@ htmlcov/
 logs/
 *.log
 
-# Virtual environment
+# Virtual environment and .env
+.env
 venv/
 
 # Editor/IDE config
