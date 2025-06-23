@@ -23,6 +23,7 @@ frontend/.env
 backend/.env
 .env
 .env.test
+.env.prod
 
 # SQLite DB (project-wide)
 tasks.db

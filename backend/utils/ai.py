@@ -1,13 +1,9 @@
 from openai import OpenAI
 from datetime import date
 import json,os,re
-from dotenv import load_dotenv
-from pathlib import Path
-load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
 
 def get_openai_client():
-    from os import getenv
-    return OpenAI(api_key=getenv("OPENAI_API_KEY"))
+    return OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def prioritize_tasks(tasks: list[dict]) -> str:
     if not tasks:

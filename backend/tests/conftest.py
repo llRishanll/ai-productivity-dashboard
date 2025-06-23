@@ -1,5 +1,4 @@
 import os
-os.environ["PYTEST_CURRENT_TEST"] = "True"
 os.environ["LIMITER"] = "False"
 
 import pytest_asyncio

@@ -13,9 +13,6 @@ from main import limiter
 from logging_config import logger
 from datetime import datetime, timezone
 import os, shutil, uuid
-from dotenv import load_dotenv
-from pathlib import Path
-load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
 
 router = APIRouter()
 

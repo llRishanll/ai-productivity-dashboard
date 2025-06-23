@@ -1,11 +1,4 @@
 import os
-from pathlib import Path
-from dotenv import load_dotenv
-if os.getenv("RUNNING_IN_DOCKER") != "true":
-    if os.getenv("PYTEST_CURRENT_TEST"):
-        load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env.test", override=True)
-    else:
-        load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env", override=True)
 from fastapi import FastAPI,Request
 from fastapi.staticfiles import StaticFiles
 from slowapi.errors import RateLimitExceeded

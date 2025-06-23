@@ -8,8 +8,6 @@ from models.task import tasks
 from jinja2 import Environment, FileSystemLoader
 from pathlib import Path
 import os
-from dotenv import load_dotenv
-load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
 
 TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
 env = Environment(loader=FileSystemLoader(TEMPLATES_DIR))
