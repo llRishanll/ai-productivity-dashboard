@@ -5,12 +5,9 @@ from database import database
 from sqlalchemy import select
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
-from dotenv import load_dotenv
 from jose import jwt
 from datetime import datetime, timedelta, timezone
 import os
-from pathlib import Path
-load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")

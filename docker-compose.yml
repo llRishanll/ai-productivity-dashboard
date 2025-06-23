@@ -7,10 +7,8 @@ services:
     container_name: taskmaster-backend
     ports:
       - "8000:8000"
-    environment:
-      RUNNING_IN_DOCKER: "true"
     env_file:
-      - .env
+      - ./backend/.env
     volumes:
       - ./backend:/app
     depends_on:
@@ -21,28 +19,35 @@ services:
     container_name: taskmaster-db
     restart: always
     env_file:
-      - .env
+      - ./backend/.env
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "127.0.0.1:5432:5432"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - ENV_FILE: .env
+    container_name: taskmaster-frontend
+    ports:
+      - "5173:80"
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - backend
 
   test-runner:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: taskmaster-test-runner
+    env_file:
+      - ./backend/.env.test
     depends_on:
       - test-db
-    environment:
-      PYTEST_CURRENT_TEST: "True"
-      LIMITER: "False"
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_HOST: ${POSTGRES_HOST}
-      POSTGRES_PORT: ${POSTGRES_PORT}
-      RUNNING_IN_DOCKER: "true"
     working_dir: /app
     volumes:
       - ./backend:/app
@@ -56,10 +61,8 @@ services:
     restart: always
     ports:
       - "5433:5432"  
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+    env_file:
+      - ./backend/.env.test
     volumes:
       - postgres_test_data:/var/lib/postgresql/data
 
