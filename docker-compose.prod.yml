@@ -32,6 +32,10 @@ services:
     container_name: taskmaster-frontend-prod
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      - ./frontend:/app
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - backend
 
