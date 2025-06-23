@@ -28,7 +28,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - ENV_FILE: .env.prod
+        ENV_FILE: .env.prod
     container_name: taskmaster-frontend-prod
     ports:
       - "80:80"

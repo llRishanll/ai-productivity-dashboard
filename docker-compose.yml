@@ -30,7 +30,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - ENV_FILE: .env
+        ENV_FILE: .env
     container_name: taskmaster-frontend
     ports:
       - "5173:80"
