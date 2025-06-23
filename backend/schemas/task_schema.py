@@ -28,4 +28,3 @@ class TaskUpdate(BaseModel):
     priority: Optional[str] = None
     completed: Optional[bool] = None
 
-    

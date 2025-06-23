@@ -1,8 +1,8 @@
 from models.task import tasks
 from database import database
-from datetime import timedelta, date, datetime
+from datetime import timedelta
 from schemas.task_schema import TaskIn,TaskUpdate
-from sqlalchemy import func, select, case
+from sqlalchemy import func, select, case, cast, Integer
 
 async def create_task(task: TaskIn, user_id: int):
     query = tasks.insert().values(
@@ -16,7 +16,7 @@ async def create_task(task: TaskIn, user_id: int):
         recurring_until=task.recurring_until
     )
     task_id = await database.execute(query)
-    return {**task.model_dump(), "id": task_id, "completed": False}
+    return {**task.model_dump(),"user_id": user_id, "id": task_id, "completed": False}
 
 async def get_all_tasks(user_id: int):
     query = tasks.select().where(tasks.c.user_id == user_id)
@@ -27,14 +27,14 @@ async def update_task(task_id: int, user_id: int, data: TaskUpdate):
     task = await database.fetch_one(query)
     if not task:
         return None  
-    update_data = {k: v for k, v in data.model_dump().items() if v is not None} 
+    update_data = data.model_dump(exclude_unset=True) 
     update_query = tasks.update().where(tasks.c.id == task_id).values(**update_data)
     await database.execute(update_query)
-    
+
     if (
         update_data.get("completed") == True
         and task["completed"] == False
-        and task["recurring"]!="none"
+        and task["recurring"] != "none"
         and task["due_date"]
     ):
         next_due = None
@@ -56,7 +56,9 @@ async def update_task(task_id: int, user_id: int, data: TaskUpdate):
             }
             insert_query = tasks.insert().values(**new_task)
             await database.execute(insert_query)
-    return {**dict(task), **update_data}
+    query = tasks.select().where(tasks.c.id == task_id)
+    updated_task = await database.fetch_one(query)
+    return updated_task
 
 async def delete_task(task_id: int, user_id: int):
     query = tasks.select().where((tasks.c.id == task_id) & (tasks.c.user_id == user_id))
@@ -73,10 +75,11 @@ async def get_task_analytics(user_id:int):
         (tasks.c.user_id == user_id) & (tasks.c.completed == True)
     ) 
     priority_query = select(
-        func.count(case((tasks.c.priority == "High", 1))).label("High"),
-        func.count(case((tasks.c.priority == "Medium", 1))).label("Medium"),
-        func.count(case((tasks.c.priority == "Low", 1))).label("Low")
-    )
+        func.sum(case((tasks.c.priority == "High", cast(1, Integer)), else_=0)).label("High"),
+        func.sum(case((tasks.c.priority == "Medium", cast(1, Integer)), else_=0)).label("Medium"),
+        func.sum(case((tasks.c.priority == "Low", cast(1, Integer)), else_=0)).label("Low")
+    ).where(tasks.c.user_id == user_id)
+
     total = await database.fetch_val(total_query)
     completed = await database.fetch_val(completed_query)
     priority_count = await database.fetch_one(priority_query)

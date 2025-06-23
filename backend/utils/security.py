@@ -5,17 +5,17 @@ from database import database
 from sqlalchemy import select
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
-from dotenv import load_dotenv
 from jose import jwt
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import os
-load_dotenv()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
-secret_key = os.getenv("SECRET_KEY")
-algorithm=os.getenv("ALGORITHM")
-expiry=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+secret_key = os.getenv("SECRET_KEY", "dev-secret")
+verification_secret_key = os.getenv("VERIFICATION_SECRET_KEY", "dev-verification-secret")
+reset_secret_key = os.getenv("RESET_SECRET_KEY", "dev-reset-secret")
+algorithm=os.getenv("ALGORITHM", "HS256")
+expiry=int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60))
 
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
@@ -25,11 +25,28 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def create_access_token(data: dict, expires_delta: timedelta = timedelta(minutes=expiry)):
     to_encode = data.copy()
-    expire = datetime.utcnow() + expires_delta
+    expire = datetime.now(timezone.utc) + expires_delta
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, secret_key, algorithm)
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+def create_verification_token(email: str) -> str:
+    expire = datetime.now(timezone.utc) + timedelta(minutes=5)
+    payload = {"sub": email, "exp": expire}
+    return jwt.encode(payload, verification_secret_key, algorithm)
+
+def decode_verification_token(token: str) -> str:
+    payload = jwt.decode(token, verification_secret_key, algorithms=[algorithm])
+    return payload.get("sub")
+
+def create_reset_token(email: str) -> str:
+    payload = {"sub": email, "exp": datetime.now(timezone.utc) + timedelta(minutes=5)}
+    return jwt.encode(payload, reset_secret_key, algorithm=algorithm)
+
+def decode_reset_token(token: str) -> str:
+    payload = jwt.decode(token, reset_secret_key, algorithms=[algorithm])
+    return payload.get("sub")
+
+async def get_current_user(roles: list, token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Invalid credentials",
@@ -47,4 +64,14 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     user = await database.fetch_one(query)
     if user is None:
         raise credentials_exception
+    if user["role"] not in roles:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Insufficient permissions."
+        )
+    if not user["is_verified"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Email not verified."
+        )
     return user

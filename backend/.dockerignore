@@ -1,0 +1,26 @@
+# Python cache and build artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Test cache and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+logs/
+*.log
+
+# Virtual environment and .env
+.env
+.env.test
+.env.prod
+venv/
+
+# Editor/IDE config
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

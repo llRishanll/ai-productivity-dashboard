@@ -8,9 +8,9 @@ tasks = Table(
     Column("title", String(100), nullable=False),
     Column("description", String(255), nullable=True),
     Column("completed", Boolean, default=False),
-    Column("user_id", Integer, ForeignKey("users.id"), nullable=False),
+    Column("user_id", Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
     Column("due_date", Date, nullable=True),  
-    Column("priority", Integer, nullable=True),
+    Column("priority", String(100), nullable=True),
     Column("recurring", String, default="none"), 
     Column("recurring_until", Date, nullable=True)
 )
