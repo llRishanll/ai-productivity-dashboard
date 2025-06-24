@@ -1,0 +1,36 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup SSH
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.EC2_SSH_KEY }}
+          name: id_rsa
+          known_hosts: 'github.com,${{ secrets.EC2_HOST }}'
+          config: |
+            Host ec2
+              HostName ${{ secrets.EC2_HOST }}
+              User ${{ secrets.EC2_USER }}
+              IdentityFile ~/.ssh/id_rsa
+              StrictHostKeyChecking no
+
+      - name: Deploy via SSH
+        run: |
+          ssh ec2 << 'EOF'
+            cd ai-productivity-dashboard
+            git pull origin main
+            docker compose -f docker-compose.prod.yml down
+            docker compose -f docker-compose.prod.yml up -d --build
+          EOF
