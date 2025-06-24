@@ -24,14 +24,14 @@ def send_email(to_email: str, tasks: list[dict]):
     task_lines = "\n".join([f"- {t['title']}: {t['description']}" for t in tasks])
     body = f"Hi there,\n\nHere are your tasks due today:\n\n{task_lines}\n\nStay productive!"
     msg = MIMEMultipart()
-    msg['From'] = os.getenv("EMAIL_USER")   
+    msg['From'] = os.getenv("EMAIL_FROM")   
     msg['To'] = to_email
     msg['Subject'] = subject
     msg.attach(MIMEText(body, 'plain'))
 
     server = smtplib.SMTP(os.getenv("EMAIL_HOST"), int(os.getenv("EMAIL_PORT", 587)))
     server.starttls()
-    server.login(os.getenv("EMAIL_USER"), os.getenv("EMAIL_PASS"))
+    server.login(os.getenv("SMTP_USER"), os.getenv("SMTP_PASS"))
     server.send_message(msg)
     server.quit()
 
@@ -56,14 +56,14 @@ def send_verification_email(email: str, token: str):
     subject = "Verify your email"
 
     msg = MIMEMultipart()
-    msg['From'] = os.getenv("EMAIL_USER")
+    msg['From'] = os.getenv("EMAIL_FROM")
     msg['To'] = email
     msg['Subject'] = subject
     msg.attach(MIMEText(render_template("verify_email.html", {"verification_url": verification_url}), 'html'))
 
     server = smtplib.SMTP(os.getenv("EMAIL_HOST"), int(os.getenv("EMAIL_PORT")))
     server.starttls()
-    server.login(os.getenv("EMAIL_USER"), os.getenv("EMAIL_PASS"))
+    server.login(os.getenv("SMTP_USER"), os.getenv("SMTP_PASS"))
     server.send_message(msg)
     server.quit()
 
@@ -72,13 +72,13 @@ def send_reset_email(email: str, token: str):
     subject = "Reset your password"
 
     msg = MIMEMultipart()
-    msg['From'] = os.getenv("EMAIL_USER")
+    msg['From'] = os.getenv("EMAIL_FROM")
     msg['To'] = email
     msg['Subject'] = subject
     msg.attach(MIMEText(render_template("reset_password.html", {"reset_url": reset_url}), 'html'))
 
     server = smtplib.SMTP(os.getenv("EMAIL_HOST"), int(os.getenv("EMAIL_PORT")))
     server.starttls()
-    server.login(os.getenv("EMAIL_USER"), os.getenv("EMAIL_PASS"))
+    server.login(os.getenv("SMTP_USER"), os.getenv("SMTP_PASS"))
     server.send_message(msg)
     server.quit()
