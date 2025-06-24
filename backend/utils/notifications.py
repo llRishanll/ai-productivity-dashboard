@@ -82,3 +82,4 @@ def send_reset_email(email: str, token: str):
     server.login(os.getenv("SMTP_USER"), os.getenv("SMTP_PASS"))
     server.send_message(msg)
     server.quit()
+    
