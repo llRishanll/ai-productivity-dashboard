@@ -196,7 +196,7 @@ async def reset_password(token: str, new_password: str, request: Request):
 @limiter.limit("5/minute")
 async def login(request: Request):
     logger.info("Google OAuth login initiated", ip=request.client.host)
-    redirect_uri = request.url_for("auth_callback")
+    redirect_uri = os.getenv("GOOGLE_REDIRECT_URI")
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
