@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
@@ -52,15 +53,17 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center bg-[#132418] px-4 py-12">
-    <div className="absolute inset-0 z-0">
-        {/* Vertical lines */}
-        <div className="absolute inset-6 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[length:100px_100px]" />
-        {/* Horizontal lines */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[length:100px_100px]" />
-      </div>
-      <div className="relative bg-[#213527]/80 flex flex-col items-center text-white w-full max-w-lg rounded-4xl shadow-lg p-8 space-y-6">
-        <h1 className="text-5xl md:text-6xl font-josefin font-bold text-yellow-700 text-center">Login <br /> TaskMaster AI</h1>
+    <div className="relative min-h-screen w-full bg-[#1e3226] text-white">
+      <Header />
+      <div className="min-h-screen flex flex-col justify-center items-center bg-[#132418] px-4 py-12">
+        <div className="absolute inset-0 z-0">
+          {/* Vertical lines */}
+          <div className="absolute inset-6 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[length:100px_100px]" />
+          {/* Horizontal lines */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[length:100px_100px]" />
+        </div>
+        <div className="relative bg-[#213527]/80 flex flex-col items-center text-white w-full max-w-lg rounded-4xl shadow-lg p-8 space-y-6">
+          <h1 className="text-5xl md:text-6xl font-josefin font-bold text-yellow-700 text-center">Login <br /> TaskMaster AI</h1>
 
         {/* Google Login */}
         <button
@@ -122,6 +125,7 @@ export default function Login() {
           </span>
         </p>
       </div>
+    </div>
     </div>
   );
 }
