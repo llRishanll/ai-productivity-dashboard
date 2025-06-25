@@ -3,7 +3,7 @@ name: Deploy via SSM
 on:
   push:
     branches:
-      - main  
+      - main
 
 jobs:
   deploy:
@@ -31,5 +31,5 @@ jobs:
             --instance-ids "$EC2_INSTANCE_ID" \
             --document-name "AWS-RunShellScript" \
             --comment "CI/CD Deployment from GitHub Actions" \
-            --parameters commands=["cd /home/ec2-user/ai-productivity-dashboard && ./deploy.sh"] \
+            --parameters '{"commands":["/home/ec2-user/deploy.sh"]}' \
             --output text

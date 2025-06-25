@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "../components/Header";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
@@ -45,6 +46,8 @@ export default function Signup() {
   };
 
   return (
+    <div className="relative min-h-screen w-full bg-[#1e3226] text-white">
+          <Header />
     <div className="min-h-screen flex flex-col justify-center items-center bg-[#132418] px-4 py-12">
       <div className="absolute inset-0 z-0">
         {/* Vertical lines */}
@@ -118,6 +121,7 @@ export default function Signup() {
           </span>
         </p>
       </div>
+    </div>
     </div>
   );
 }
