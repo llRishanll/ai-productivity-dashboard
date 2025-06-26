@@ -18,8 +18,9 @@ export default function Landing() {
       <Hero />
 
       {/* Features Section */}
+      <section id="features">
       <Features />
-
+      </section>
       {/* Features Section 2 */}
       <Features2 />
       {/* Stats Section */}

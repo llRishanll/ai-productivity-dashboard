@@ -45,7 +45,7 @@ export default function Header() {
     };
   }, []);
 
-  const navLinks = ["features", "pricing", "resources", "about"];
+  const navLinks = ["home","features", "dashboard", "about", "contact Us"];
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -59,17 +59,45 @@ export default function Header() {
         <Link className="text-yellow-700 font-bold text-md sm:text-lg md:text-xl lg:text-xl xl:text-2xl"
           to="/">LOGO</Link>
 
-        <nav className="hidden lg:flex space-x-8 text-lg font-inter font-light absolute left-1/2 -translate-x-1/2">
-          {navLinks.map((route) => (
-            <Link
-              key={route}
-              to={`/${route}`}
-              className="hover:text-yellow-700 hover:scale-105 transition"
-            >
-              {route.charAt(0).toUpperCase() + route.slice(1)}
-            </Link>
-          ))}
-        </nav>
+          <nav className="hidden lg:flex space-x-8 text-lg font-inter font-light absolute left-1/2 -translate-x-1/2">
+            {navLinks.map((route) => {
+              const label = route.charAt(0).toUpperCase() + route.slice(1);
+
+              if (route === "features") {
+                return (
+                  <a
+                    key={route}
+                    href="/#features"
+                    className="hover:text-yellow-700 hover:scale-105 transition"
+                  >
+                    {label}
+                  </a>
+                );
+              } else if (route === "home") {
+                return (
+                  <Link
+                    key={route}
+                    to="/"
+                    className="hover:text-yellow-700 hover:scale-105 transition"
+                  >
+                    Home
+                  </Link>
+                );
+              } else {
+                return (
+                  <Link
+                    key={route}
+                    to={`/${route}`}
+                    className="hover:text-yellow-700 hover:scale-105 transition"
+                  >
+                    {label}
+                  </Link>
+                );
+              }
+            })}
+
+          </nav>
+
 
         <div className="relative flex items-center space-x-4 text-md">
           <button
@@ -137,16 +165,43 @@ export default function Header() {
           ${isMobileMenuOpen ? "max-h-[500px] py-6 opacity-100" : "max-h-0 py-0 opacity-0"}
         `}
       >
-        {navLinks.map((route) => (
-          <Link
-            key={route}
-            to={`/${route}`}
-            onClick={() => setIsMobileMenuOpen(false)}
-            className="transition-colors duration-200 hover:text-yellow-700 active:text-yellow-800"
-          >
-            {route.charAt(0).toUpperCase() + route.slice(1)}
-          </Link>
-        ))}
+        {navLinks.map((route) => {
+          const label = route.charAt(0).toUpperCase() + route.slice(1);
+
+          if (route === "features") {
+            return (
+              <a
+                key={route}
+                href="/#features"
+                className="hover:text-yellow-700 hover:scale-105 transition"
+              >
+                {label}
+              </a>
+            );
+          } else if (route === "home") {
+            return (
+              <Link
+                key={route}
+                to="/"
+                className="hover:text-yellow-700 hover:scale-105 transition"
+              >
+                Home
+              </Link>
+            );
+          } else {
+            return (
+              <Link
+                key={route}
+                to={`/${route}`}
+                className="hover:text-yellow-700 hover:scale-105 transition"
+              >
+                {label}
+              </Link>
+            );
+          }
+        })}
+
+
 
         {!loggedIn ? (
           <>

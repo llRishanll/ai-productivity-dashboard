@@ -21,7 +21,7 @@ export default function Hero() {
 
         {/* CTA Button */}
         <Link
-          to="/#features"
+          to="/dashboard"
           className="bg-yellow-700 text-white px-6 py-2 text-base md:text-xl rounded-md hover:bg-yellow-800 hover:scale-105 transition duration-300 font-inter"
         >
           Get Started

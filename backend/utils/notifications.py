@@ -68,7 +68,7 @@ def send_verification_email(email: str, token: str):
     server.quit()
 
 def send_reset_email(email: str, token: str):
-    reset_url = f"{os.getenv('FRONTEND_URL')}/reset-password?token={token}"
+    reset_url = f"{os.getenv('FRONTEND_URL')}/forgot-password?token={token}"
     subject = "Reset your password"
 
     msg = MIMEMultipart()

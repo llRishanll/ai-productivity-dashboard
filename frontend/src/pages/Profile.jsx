@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -99,7 +100,7 @@ export default function Profile() {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-[#132418] text-white px-6 py-20 flex flex-col items-center">
+      <div className="relative min-h-screen bg-[#132418] text-white px-6 py-20 flex flex-col items-center">
         <div className="pointer-events-none absolute inset-0 z-0">
           {/* Vertical lines */}
           <div className="absolute inset-6 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[length:100px_100px]" />
@@ -182,25 +183,25 @@ export default function Profile() {
             {/* Editable Fields */}
             <div className="space-y-4 pt-2">
               <div>
-                <label className="block text-left font-inter font-semibold text-white/80 mb-1">
+                <label className="px-2 block text-left font-inter font-semibold text-white/80 mb-1">
                   Name
                 </label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-4 py-2 rounded-md bg-[#132418] text-white/70 border border-white/20 focus:outline-none focus:ring-2 focus:ring-yellow-700"
+                  className="w-full px-2 py-2 rounded-md bg-[#132418] text-white/70 border font-inter border-white/20 focus:outline-none focus:ring-2 focus:ring-yellow-700"
                 />
               </div>
               <div>
-                <label className="block text-left font-inter font-semibold text-white/80 mb-1">
+                <label className="px-2 block text-left font-inter font-semibold text-white/80 mb-1">
                   Email {user.is_verified ? "(Verified)" : "(Unverified)"}
                 </label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-2 rounded-md bg-[#132418] text-white/70 border border-white/20 focus:outline-none focus:ring-2 focus:ring-yellow-700"
+                  className="w-full px-2 py-2 rounded-md bg-[#132418] text-white/70 border border-white/20 font-inter focus:outline-none focus:ring-2 focus:ring-yellow-700"
                 />
               </div>
               <button
@@ -216,6 +217,7 @@ export default function Profile() {
           </div>
         )}
       </div>
+      <Footer />
     </>
   );
 }
