@@ -4,7 +4,7 @@ from fastapi.responses import RedirectResponse
 from authlib.integrations.starlette_client import OAuth
 from starlette.config import Config
 from crud.user_crud import get_or_create_user
-from schemas.user_schema import UserCreate, UserSignup, UserUpdate
+from schemas.user_schema import UserCreate, UserSignup, UserUpdate, EmailRequest, PasswordResetRequest
 from utils.security import hash_password, verify_password, create_access_token, get_current_user, create_verification_token, decode_verification_token, create_reset_token, decode_reset_token, oauth2_scheme
 from utils.notifications import send_verification_email, send_reset_email
 from database import database
@@ -144,8 +144,9 @@ async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends
     return {"access_token": token, "token_type": "bearer"}
 
 @router.post("/auth/forgot-password")
-@limiter.limit("2/hour")
-async def request_password_reset(request: Request, email: str):
+@limiter.limit("1/minute")
+async def request_password_reset(request: Request, payload: EmailRequest):
+    email = payload.email
     logger.info("Password reset requested", email=email, ip=request.client.host)
 
     user = await database.fetch_one(users.select().where(users.c.email == email))
@@ -165,12 +166,12 @@ async def request_password_reset(request: Request, email: str):
 
 @router.post("/auth/reset-password")
 @limiter.limit("5/minute")
-async def reset_password(token: str, new_password: str, request: Request):
-    logger.info("Password reset attempt", token=token, ip=request.client.host)
+async def reset_password(payload: PasswordResetRequest, request: Request):
+    logger.info("Password reset attempt", token=payload.token, ip=request.client.host)
     try:
-        email = decode_reset_token(token)
+        email = decode_reset_token(payload.token)
     except Exception as e:
-        logger.warning("Password reset failed - Invalid or expired token", token=token, error=str(e))
+        logger.warning("Password reset failed - Invalid or expired token", token=payload.token, error=str(e))
         raise HTTPException(status_code=400, detail="Invalid or expired token")
 
     query = users.select().where(users.c.email == email)
@@ -183,8 +184,8 @@ async def reset_password(token: str, new_password: str, request: Request):
     if not user["is_verified"]:
         logger.warning("Password reset blocked - email not verified", email=email)
         raise HTTPException(status_code=403, detail="Email not verified")
-    
-    hashed_password = hash_password(new_password)
+
+    hashed_password = hash_password(payload.new_password)
     query = users.update().where(users.c.email == email).values(password_hash=hashed_password, updated_at=datetime.now(timezone.utc))
     await database.execute(query)
 

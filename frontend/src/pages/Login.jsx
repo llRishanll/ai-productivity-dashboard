@@ -108,7 +108,7 @@ export default function Login() {
             {error && <p className="text-red-500 text-md">{error}</p>}
             <button
             type="submit"
-            className="w-full bg-yellow-700 text-white px-6 py-3 rounded-xl hover:bg-yellow-800 hover:scale-105 transition duration-300 font-inter text-2xl"
+            className="w-full bg-yellow-700 text-white px-6 py-3 rounded-xl hover:bg-yellow-800 hover:scale-105 transition duration-300 font-inter text-2xl cursor-pointer"
             >
             Sign in
             </button>

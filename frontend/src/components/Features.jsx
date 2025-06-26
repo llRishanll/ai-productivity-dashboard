@@ -6,11 +6,7 @@ export default function Features() {
     <section className="relative w-full min-h-screen bg-[#213527] text-white px-6 md:px-24 py-24 overflow-hidden">
       {/* Background 01 */}
       <div className="absolute text-[35rem] md:text-[36rem] font-semibold font-josefin text-white/5 left-[-12rem] top-[12rem] md:left-[5rem] md:top-[4.5rem] lg:left-[4.5rem] lg:top-[6rem] select-none z-0"
-      style={{
-      transform: "translateZ(0)",
-      WebkitFontSmoothing: "antialiased",
-      MozOsxFontSmoothing: "grayscale",
-      }}>
+      >
         01
       </div>
 
@@ -86,7 +82,8 @@ export default function Features() {
         </div>
 
         {/* Right Column - Image Card */}
-        <div className="relative bg-gradient-to-b from-[#3d693c] via-[#213527] to-[#213527] rounded-3xl p-6 shadow-2xl flex flex-col justify-between w-full max-w-[345px] md:max-w-[500px] md:min-h-[600px] mx-auto top-5">
+        <Link to="/dashboard">
+        <div className="relative bg-gradient-to-b from-[#3d693c] via-[#213527] to-[#213527] rounded-3xl p-6 shadow-2xl flex flex-col justify-between w-full max-w-[345px] md:max-w-[500px] md:min-h-[600px] mx-auto top-5 hover:scale-105 transition-transform duration-300">
           <img
             src={placeholder}
             alt="TaskMaster AI Preview"
@@ -102,6 +99,7 @@ export default function Features() {
             </p>
           </div>
         </div>
+        </Link>
       </div>
     </section>
   );

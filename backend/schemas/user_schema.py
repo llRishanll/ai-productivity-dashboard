@@ -14,3 +14,10 @@ class UserSignup(BaseModel):
 class UserUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[str] = None
+
+class EmailRequest(BaseModel):
+    email: str
+
+class PasswordResetRequest(BaseModel):
+    token: str
+    new_password: str
