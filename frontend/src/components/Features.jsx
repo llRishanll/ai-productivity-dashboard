@@ -5,7 +5,12 @@ export default function Features() {
   return (
     <section className="relative w-full min-h-screen bg-[#213527] text-white px-6 md:px-24 py-24 overflow-hidden">
       {/* Background 01 */}
-      <div className="absolute text-[35rem] md:text-[36rem] font-semibold font-josefin text-white/5 left-[-12rem] top-[12rem] md:left-[5rem] md:top-[4.5rem] lg:left-[4.5rem] lg:top-[6rem] select-none z-0">
+      <div className="absolute text-[35rem] md:text-[36rem] font-semibold font-josefin text-white/5 left-[-12rem] top-[12rem] md:left-[5rem] md:top-[4.5rem] lg:left-[4.5rem] lg:top-[6rem] select-none z-0"
+      style={{
+      transform: "translateZ(0)",
+      WebkitFontSmoothing: "antialiased",
+      MozOsxFontSmoothing: "grayscale",
+      }}>
         01
       </div>
 
