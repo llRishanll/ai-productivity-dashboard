@@ -119,16 +119,17 @@ export default function Profile() {
             {user.picture && (
               <div className="relative group w-42 h-42 mx-auto">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-42 h-42 md:bg-yellow-700/20 bg-yellow-700/10 rounded-full blur-3xl z-0" />
+
+                <label className="cursor-pointer">
                   <img
                     src={`${import.meta.env.VITE_API_URL}${user.picture}`}
                     alt="Profile"
                     className="w-42 h-42 rounded-full object-cover border-3 border-yellow-700 shadow-md transition-opacity duration-300"
                   />
 
-                  {/* Desktop hover overlay */}
+                  {/* hover overlay */}
                   <div
-                    onClick={() => document.getElementById("profile-pic-input").click()}
-                    className="hidden md:flex absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 items-center justify-center cursor-pointer transition-opacity duration-300"
+                    className="hidden md:flex absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 items-center justify-center transition-opacity duration-300"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -146,14 +147,13 @@ export default function Profile() {
                     </svg>
                   </div>
 
-                  {/* Mobile circular pencil button */}
+                  {/* mobile pencil button */}
                   <div
-                    onClick={() => document.getElementById("profile-pic-input").click()}
-                    className="block md:hidden absolute bottom-1 right-3 bg-yellow-700 hover:bg-yellow-800 rounded-full p-1 cursor-pointer shadow-lg"
+                    className="block md:hidden absolute bottom-1 right-3 bg-yellow-700 hover:bg-yellow-800 rounded-full p-1 shadow-lg"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="w-6 h-6 text-white group-hover:animate-wiggle-slight transition duration-300"
+                      className="w-6 h-6 text-white transition duration-300"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -167,15 +167,15 @@ export default function Profile() {
                     </svg>
                   </div>
 
-                <label className="absolute inset-0 cursor-pointer">
                   <input
                     type="file"
                     accept="image/*"
                     onChange={handleFileChange}
-                    className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
+                    className="absolute inset-0 opacity-0 cursor-pointer"
                   />
                 </label>
               </div>
+
             )}
             {uploadStatus && (
               <p className="text-sm text-yellow-700 transition-all duration-300 text-center animate-fade-slide-up">{uploadStatus}</p>
