@@ -1,5 +1,5 @@
 import Header from "../../components/Header";
-import Sidebar from "../../components/SideBar";
+import Sidebar from "../../components/Sidebar";
 import { Outlet } from "react-router-dom"; // ✅ REQUIRED for nested routes to show
 
 export default function Dashboard() {
