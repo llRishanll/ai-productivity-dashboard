@@ -56,6 +56,8 @@ export default function Profile() {
     const formData = new FormData();
     formData.append("file", fileToUpload);
 
+    alert(`Uploading file:\nName: ${fileToUpload.name}\nType: ${fileToUpload.type}\nSize: ${fileToUpload.size}`);
+
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/upload-profile-picture`, {
         method: "POST",
