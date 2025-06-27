@@ -84,7 +84,7 @@ async def get_task_analytics(user_id:int):
     completed = await database.fetch_val(completed_query)
     priority_count = await database.fetch_one(priority_query)
 
-    completion_rate = f"{(completed/total * 100):.0f}%" if total > 0 else "0%"
+    completion_rate = (completed/total * 100) if total > 0 else 0
 
     return{
         "total_tasks": total,
