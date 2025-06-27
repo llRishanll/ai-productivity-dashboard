@@ -119,61 +119,62 @@ export default function Profile() {
             {user.picture && (
               <div className="relative group w-42 h-42 mx-auto">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-42 h-42 md:bg-yellow-700/20 bg-yellow-700/10 rounded-full blur-3xl z-0" />
-                <img
-                  src={`${import.meta.env.VITE_API_URL}${user.picture}`}
-                  alt="Profile"
-                  className="w-42 h-42 rounded-full object-cover border-3 border-yellow-700 shadow-md transition-opacity duration-300"
-                />
+                  <img
+                    src={`${import.meta.env.VITE_API_URL}${user.picture}`}
+                    alt="Profile"
+                    className="w-42 h-42 rounded-full object-cover border-3 border-yellow-700 shadow-md transition-opacity duration-300"
+                  />
 
-                {/* Desktop hover overlay */}
-                <div
-                  onClick={() => document.getElementById("profile-pic-input").click()}
-                  className="hidden md:flex absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 items-center justify-center cursor-pointer transition-opacity duration-300"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-8 h-8 text-white group-hover:animate-wiggle-slight transition duration-300"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+                  {/* Desktop hover overlay */}
+                  <div
+                    onClick={() => document.getElementById("profile-pic-input").click()}
+                    className="hidden md:flex absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 items-center justify-center cursor-pointer transition-opacity duration-300"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15.232 5.232l3.536 3.536M9 13l6.536-6.536a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-1.414a2 2 0 01.586-1.414z"
-                    />
-                  </svg>
-                </div>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-8 h-8 text-white group-hover:animate-wiggle-slight transition duration-300"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15.232 5.232l3.536 3.536M9 13l6.536-6.536a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-1.414a2 2 0 01.586-1.414z"
+                      />
+                    </svg>
+                  </div>
 
-                {/* Mobile circular pencil button */}
-                <div
-                  onClick={() => document.getElementById("profile-pic-input").click()}
-                  className="block md:hidden absolute bottom-1 right-3 bg-yellow-700 hover:bg-yellow-800 rounded-full p-1 cursor-pointer shadow-lg"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-6 h-6 text-white group-hover:animate-wiggle-slight transition duration-300"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+                  {/* Mobile circular pencil button */}
+                  <div
+                    onClick={() => document.getElementById("profile-pic-input").click()}
+                    className="block md:hidden absolute bottom-1 right-3 bg-yellow-700 hover:bg-yellow-800 rounded-full p-1 cursor-pointer shadow-lg"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15.232 5.232l3.536 3.536M9 13l6.536-6.536a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-1.414a2 2 0 01.586-1.414z"
-                    />
-                  </svg>
-                </div>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-6 h-6 text-white group-hover:animate-wiggle-slight transition duration-300"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15.232 5.232l3.536 3.536M9 13l6.536-6.536a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-1.414.586H9v-1.414a2 2 0 01.586-1.414z"
+                      />
+                    </svg>
+                  </div>
 
-                <input
-                  id="profile-pic-input"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
+                <label className="absolute inset-0 cursor-pointer">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
+                  />
+                </label>
               </div>
             )}
             {uploadStatus && (
