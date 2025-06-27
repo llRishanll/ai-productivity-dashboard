@@ -69,9 +69,11 @@ export default function Profile() {
         setUploadStatus("Upload successful!");
         fetchUser();
       } else {
+        alert(`Server responded: ${JSON.stringify(data)}`);
         setUploadStatus(data.detail || "Upload failed");
       }
     } catch {
+      alert(`Fetch error: ${err}`);
       setUploadStatus("Upload failed");
     }
   };
