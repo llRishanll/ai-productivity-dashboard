@@ -238,7 +238,7 @@ async def test_get_task_analytics(client, test_user):
 
     assert data["total_tasks"] >= 2
     assert data["completed_tasks"] >= 1
-    assert "%" in data["completion_rate"]
+    assert data["completion_rate"] == 50
 
 
 @pytest.mark.asyncio
