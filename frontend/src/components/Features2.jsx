@@ -9,33 +9,6 @@ export default function UpcomingFeatures() {
         02
       </div>
 
-      {/* Background 02 for small screens as SVG */}
-      <svg
-        className="block md:hidden absolute z-0 select-none"
-        viewBox="0 0 500 500"
-        width="720"
-        height="720"
-        style={{
-          right: "-2rem",
-          bottom: "22rem",
-        }}
-      >
-        <text
-          x="50%"
-          y="50%"
-          textAnchor="middle"
-          dominantBaseline="middle"
-          fill="white"
-          fillOpacity="0.05"
-          fontFamily="Josefin Sans, sans-serif"
-          fontWeight="630"
-          fontSize="400"
-        >
-          02
-        </text>
-      </svg>
-
-
       {/* Grid Layout */}
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-18 items-center">
         {/* Left Image */}
