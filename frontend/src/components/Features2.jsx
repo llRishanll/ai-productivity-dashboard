@@ -13,9 +13,9 @@ export default function UpcomingFeatures() {
       <svg
         className="block md:hidden absolute z-0 select-none"
         viewBox="0 0 500 500"
+        width="720"
+        height="720"
         style={{
-          width: "45rem",
-          height: "45rem",
           right: "-2rem",
           bottom: "22rem",
         }}
