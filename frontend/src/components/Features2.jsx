@@ -5,9 +5,36 @@ export default function UpcomingFeatures() {
   return (
     <section className="relative w-full bg-[#213527] text-white px-6 md:px-24 py-24 overflow-hidden">
       {/* Background 02 */}
-      <div className="absolute text-[35rem] md:text-[36rem] font-semibold font-josefin text-white/5 bottom-[22rem] right-[-1rem] md:bottom-[-6.6rem] md:right-[4rem] select-none z-0">
+      <div className="hidden md:block absolute text-[36rem] font-semibold font-josefin text-white/5 bottom-[-6.6rem] right-[4rem] select-none z-0">
         02
       </div>
+
+      {/* Background 02 for small screens as SVG */}
+      <svg
+        className="block md:hidden absolute z-0 select-none"
+        viewBox="0 0 500 500"
+        style={{
+          width: "45rem",
+          height: "45rem",
+          right: "-2rem",
+          bottom: "22rem",
+        }}
+      >
+        <text
+          x="50%"
+          y="50%"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fill="white"
+          fillOpacity="0.05"
+          fontFamily="Josefin Sans, sans-serif"
+          fontWeight="630"
+          fontSize="400"
+        >
+          02
+        </text>
+      </svg>
+
 
       {/* Grid Layout */}
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-18 items-center">
