@@ -8,30 +8,6 @@ export default function Features() {
       <div className="hidden md:block absolute text-[36rem] font-semibold font-josefin text-white/5 left-[5rem] top-[4.5rem] select-none z-0">
         01
       </div>
-      <svg
-        className="block md:hidden absolute z-0 select-none"
-        viewBox="0 0 500 500"
-        width="720"
-        height="720"
-        style={{
-          left: "-17rem",
-          top: "15rem",
-        }}
-      >
-        <text
-          x="50%"
-          y="50%"
-          textAnchor="middle"
-          dominantBaseline="middle"
-          fill="white"
-          fillOpacity="0.05"
-          fontFamily="Josefin Sans, sans-serif"
-          fontWeight="650"
-          fontSize="400"
-        >
-          01
-        </text>
-      </svg>
 
       {/* Grid Layout */}
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8 items-center">
