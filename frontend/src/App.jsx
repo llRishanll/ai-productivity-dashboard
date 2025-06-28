@@ -28,7 +28,7 @@ export default function App() {
     const token = urlParams.get("token");
     const currentPath = window.location.pathname;
 
-    if (token && currentPath !== "/verify-email") {
+    if (token && currentPath !== "/verify-email" && currentPath != "/forgot-password") {
       localStorage.setItem("token", token);
       window.location.href = "/dashboard"; 
     }
