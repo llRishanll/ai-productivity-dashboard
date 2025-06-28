@@ -26,10 +26,11 @@ export default function App() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get("token");
+    const currentPath = window.location.pathname;
 
-    if (token) {
+    if (token && currentPath !== "/verify-email") {
       localStorage.setItem("token", token);
-      window.location.href = "/"; // redirect to landing or dashboard after storing token
+      window.location.href = "/dashboard"; 
     }
   }, []);
 
