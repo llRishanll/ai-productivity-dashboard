@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
+import { motion } from "framer-motion";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
@@ -53,6 +54,13 @@ export default function Login() {
   };
 
   return (
+    <div style={{ backgroundColor: "black", overflow: "hidden" }}>
+    <motion.div
+      initial={{opacity: 0}}
+      animate={{opacity: 1}}
+      exit={{opacity: 0}}
+      transition={{ duration: 0.5}}
+    >
     <div className="relative min-h-screen w-full bg-[#1e3226] text-white">
       <Header />
       <div className="min-h-screen flex flex-col justify-center items-center bg-[#132418] px-4 py-12">
@@ -126,6 +134,8 @@ export default function Login() {
         </p>
       </div>
     </div>
+    </div>
+    </motion.div>
     </div>
   );
 }

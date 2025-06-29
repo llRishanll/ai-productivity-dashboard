@@ -1,3 +1,9 @@
+body {
+  background-color: black;
+  color: white;
+  font-family: var(--font-inter, sans-serif);
+}
+
 @font-face {
   font-family: Inter;
   src: url("./assets/fonts/Inter-VariableFont_opsz,wght.ttf") format('truetype');
@@ -32,4 +38,16 @@
     0%, 100% { transform: rotate(-1.5deg); }
     50% { transform: rotate(1.5deg); }
   }
+}
+
+/* Fade-in waterfall classes */
+.fade-in-item {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.fade-in-item.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out
 }

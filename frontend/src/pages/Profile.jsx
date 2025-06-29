@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { initFadeInOnScroll } from "../utils/fadeInModule";
+import { motion } from "framer-motion";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -44,6 +46,10 @@ export default function Profile() {
       return () => clearTimeout(timer);
     }
   }, [saveStatus]);
+
+  useEffect(() => {
+    initFadeInOnScroll();
+  }, []);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -98,7 +104,13 @@ export default function Profile() {
   };
 
   return (
-    <>
+    <div style={{ backgroundColor: "black", overflow: "hidden" }}>
+    <motion.div
+      initial={{opacity: 0}}
+      animate={{opacity: 1}}
+      exit={{opacity: 0}}
+      transition={{ duration: 0.5}}
+    >
       <Header />
       <div className="relative min-h-screen bg-[#132418] text-white px-6 py-20 flex flex-col items-center">
         <div className="pointer-events-none absolute inset-0 z-0">
@@ -219,6 +231,7 @@ export default function Profile() {
         )}
       </div>
       <Footer />
-    </>
+    </motion.div>
+    </div>
   );
 }
