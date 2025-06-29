@@ -79,7 +79,7 @@ export default function ForgotPassword() {
   return (
     <>
     <Header />
-    <div className="min-h-screen flex flex-col justify-center items-center bg-[#132418] px-4 py-12">
+    <div className="min-h-screen flex flex-col justify-center items-center bg-[#132418] px-4 py-12 pt-[10.5rem]">
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-6 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[length:100px_100px]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[length:100px_100px]" />

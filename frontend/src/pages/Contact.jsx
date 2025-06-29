@@ -49,7 +49,7 @@ export default function Contact() {
       transition={{ duration: 0.5}}
     >
       <Header />
-      <div className="relative min-h-screen bg-[#132418] text-white px-6 py-20 flex flex-col items-center">
+      <div className="relative min-h-screen bg-[#132418] text-white px-6 py-20 flex flex-col items-center pt-[10.5rem]">
       {/* Grid overlay */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         {/* Vertical lines */}

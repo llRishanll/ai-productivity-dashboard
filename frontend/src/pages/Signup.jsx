@@ -57,7 +57,7 @@ export default function Signup() {
       >
         <div className="relative w-full min-h-screen bg-[#1e3226] text-white">
           <Header />
-          <div className="min-h-screen flex flex-col justify-center items-center bg-[#132418] px-4 py-12 relative">
+          <div className="min-h-screen flex flex-col justify-center items-center bg-[#132418] px-4 py-12 relative pt-[11rem]">
             
             {/* grid lines */}
             <div className="absolute inset-0 z-0">

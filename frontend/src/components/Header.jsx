@@ -54,7 +54,7 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-[#213527] text-white w-full px-6 sm:px-10 lg:px-20 xl:px-24 py-7">
+    <header className="fixed top-0 z-50 bg-[#213527] text-white w-full px-6 sm:px-10 lg:px-20 xl:px-24 py-7">
       <div className="flex items-center justify-between w-full">
         <Link className="text-yellow-700 font-bold text-md sm:text-lg md:text-xl lg:text-xl xl:text-2xl"
           to="/">LOGO</Link>
