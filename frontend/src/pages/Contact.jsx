@@ -1,7 +1,9 @@
 import Header from "../components/Header";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import emailjs from "@emailjs/browser";
 import Footer from "../components/Footer";
+import { initFadeInOnScroll } from "../utils/fadeInModule";
+import { motion } from "framer-motion";
 
 export default function Contact() {
   const formRef = useRef();
@@ -13,6 +15,10 @@ export default function Contact() {
     setCopied(text);
     setTimeout(() => setCopied(""), 2000);
   };
+
+  useEffect(() => {
+      initFadeInOnScroll();
+    }, []);
 
   const sendEmail = (e) => {
     e.preventDefault();
@@ -35,7 +41,13 @@ export default function Contact() {
   };
 
   return (
-    <>
+    <div style={{ backgroundColor: "black", overflow: "hidden" }}>
+    <motion.div
+      initial={{opacity: 0}}
+      animate={{opacity: 1}}
+      exit={{opacity: 0}}
+      transition={{ duration: 0.5}}
+    >
       <Header />
       <div className="relative min-h-screen bg-[#132418] text-white px-6 py-20 flex flex-col items-center">
       {/* Grid overlay */}
@@ -203,6 +215,7 @@ export default function Contact() {
       </div>
       </div>
       <Footer />
-    </>
+    </motion.div>
+    </div>
   );
 }
