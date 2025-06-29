@@ -63,7 +63,7 @@ export default function Login() {
     >
     <div className="relative min-h-screen w-full bg-[#1e3226] text-white">
       <Header />
-      <div className="min-h-screen flex flex-col justify-center items-center bg-[#132418] px-4 py-12">
+      <div className="min-h-screen flex flex-col justify-center items-center bg-[#132418] px-4 py-12 pt-[11rem]">
         <div className="absolute inset-0 z-0">
           {/* Vertical lines */}
           <div className="absolute inset-6 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[length:100px_100px]" />

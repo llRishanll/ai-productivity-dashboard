@@ -19,7 +19,7 @@ export default function About() {
       transition={{ duration: 0.5}}
     >
       <Header />
-      <div className="relative min-h-screen bg-[#132418] text-white px-6 py-20 flex flex-col items-center">
+      <div className="relative min-h-screen bg-[#132418] text-white px-6 py-20 flex flex-col items-center pt-[10.5rem]">
       {/* Decorative Grid Background */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute inset-6 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[length:100px_100px]" />

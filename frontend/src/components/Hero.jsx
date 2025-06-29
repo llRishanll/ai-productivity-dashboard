@@ -4,7 +4,7 @@ import bgImage from "../assets/landing-bg.png";
 export default function Hero() {
   return (
     <section
-      className="relative min-h-screen w-full md:bg-fixed bg-center bg-cover bg-no-repeat flex items-center justify-center px-4"
+      className="relative min-h-screen w-full md:bg-fixed bg-center bg-cover bg-no-repeat flex items-center justify-center px-4 pt-[11rem]"
       style={{ backgroundImage: `url(${bgImage})` }}
     >
       {/* Translucent Box */}
