@@ -21,6 +21,7 @@ import WeekPlan from './pages/dashboard/ai/WeekPlan';
 import Summary from './pages/dashboard/ai/Summary';
 import UserManage from './pages/dashboard/admin/UserManagement';
 import AdminStats from './pages/dashboard/admin/Stats';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 
 export default function App() {
   useEffect(() => {
@@ -42,6 +43,7 @@ export default function App() {
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy/>}/>
         <Route path="/about" element={<About />} />
         <Route path="/contact Us" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />

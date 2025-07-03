@@ -1,4 +1,22 @@
+import { useNavigate } from "react-router-dom";
+
 export default function CallToAction() {
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const emailInput = e.target.elements.email;
+    const email = emailInput.value.trim();
+
+    if (!email) {
+      alert("Please enter your email.");
+      return;
+    }
+
+    // browser will enforce basic pattern because type="email"
+    navigate(`/signup?email=${encodeURIComponent(email)}`);
+  };
+
   return (
     <section className="w-full bg-[#213527] text-white px-6 py-24 flex flex-col items-center text-center space-y-8 fade-in-group" data-stagger-delay="150">
       {/* Top Line */}
@@ -19,10 +37,15 @@ export default function CallToAction() {
       </p>
 
       {/* Email Input + Button */}
-      <form className="fade-in-item mt-6 flex flex-col sm:flex-row items-center gap-4 bg-[#1A1A1A]/90 px-2 py-2 rounded-md w-full max-w-xl">
+      <form
+        onSubmit={handleSubmit}
+        className="fade-in-item mt-6 flex flex-col sm:flex-row items-center gap-4 bg-[#1A1A1A]/90 px-2 py-2 rounded-md w-full max-w-xl"
+      >
         <input
           type="email"
+          name="email"
           placeholder="Enter your email address"
+          required
           className="bg-transparent outline-none text-white/80 text-[1.1rem] text-center md:text-left md:text-lg placeholder-white/40 w-full px-2 py-2 font-inter md:border-none border-2 border-white/10 rounded-md transition duration-300 focus:border-yellow-700 focus:ring-2 focus:ring-yellow-700 focus:ring-opacity-50"
         />
         <button
@@ -38,7 +61,7 @@ export default function CallToAction() {
         By signing up, you agree to our{" "}
         <span className="text-yellow-700 hover:underline cursor-pointer">Terms</span>{" "}
         and{" "}
-        <span className="text-yellow-700 hover:underline cursor-pointer">Privacy Policy</span>.
+        <span className="text-yellow-700 hover:underline cursor-pointer"><a href="/privacy-policy">Privacy Policy</a></span>.
       </p>
     </section>
   );
