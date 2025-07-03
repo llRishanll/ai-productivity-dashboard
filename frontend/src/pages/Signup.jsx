@@ -1,13 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useSearchParams } from "react-router-dom";
 import Header from "../components/Header";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
 export default function Signup() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [searchParams] = useSearchParams();
+  const initialEmail = searchParams.get("email") || "";
+  const [form, setForm] = useState({ name: "", email: initialEmail, password: "" });
+
   const [error, setError] = useState("");
   const [msg, setMsg] = useState("");
 
