@@ -12,5 +12,6 @@ tasks = Table(
     Column("due_date", Date, nullable=True),  
     Column("priority", String(100), nullable=True),
     Column("recurring", String, default="none"), 
-    Column("recurring_until", Date, nullable=True)
+    Column("recurring_until", Date, nullable=True),
+    Column("calendar_event_id", String, nullable=True)
 )

@@ -75,7 +75,7 @@ export default function Footer() {
       <div className="fade-in-item max-w-[90rem] mx-auto flex flex-col md:flex-row justify-between items-center pt-6 text-white/50 text-sm md:text-lg gap-2 md:gap-0">
         <p>© 2025 TaskMaster AI. All rights reserved.</p>
         <div className="flex gap-6">
-          <a href="#" className="hover:text-yellow-700">Privacy Policy</a>
+          <a href="/privacy-policy" className="hover:text-yellow-700">Privacy Policy</a>
           <a href="#" className="hover:text-yellow-700">Terms of Service</a>
           <a href="#" className="hover:text-yellow-700">Cookies</a>
         </div>
