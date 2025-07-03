@@ -32,7 +32,7 @@ oauth.register(
     authorize_url='https://accounts.google.com/o/oauth2/auth',
     api_base_url='https://www.googleapis.com/oauth2/v1/',
     client_kwargs={
-        'scope': 'email profile'
+        'scope': 'email profile https://www.googleapis.com/auth/calendar.events'
     }
 )
 

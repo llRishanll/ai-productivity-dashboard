@@ -61,7 +61,7 @@ export default function CallToAction() {
         By signing up, you agree to our{" "}
         <span className="text-yellow-700 hover:underline cursor-pointer">Terms</span>{" "}
         and{" "}
-        <span className="text-yellow-700 hover:underline cursor-pointer">Privacy Policy</span>.
+        <span className="text-yellow-700 hover:underline cursor-pointer"><a href="/privacy-policy">Privacy Policy</a></span>.
       </p>
     </section>
   );
