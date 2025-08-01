@@ -32,7 +32,7 @@ oauth.register(
     authorize_url='https://accounts.google.com/o/oauth2/auth',
     api_base_url='https://www.googleapis.com/oauth2/v1/',
     client_kwargs={
-        'scope': 'email profile https://www.googleapis.com/auth/calendar.events'
+        'scope': 'email profile'
     }
 )
 
@@ -40,7 +40,7 @@ UPLOAD_DIR = "static/uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 @router.post("/auth/signup", status_code=201)
-@limiter.limit("3/minute")  
+@limiter.limit("3/minute;10/hour")  
 async def signup(user: UserSignup, request: Request):
     logger.info("Signup attempt", email=user.email, ip=request.client.host)
 
@@ -101,7 +101,7 @@ async def verify_email(token: str, request: Request):
 
 
 @router.post("/resend-verification")
-@limiter.limit("1/minute")
+@limiter.limit("1/minute;5/hour")
 async def resend_verification(request: Request, email: str):
     logger.info("Resend verification attempt", email=email, ip=request.client.host)
 
@@ -121,7 +121,7 @@ async def resend_verification(request: Request, email: str):
     return {"message": "Verification email resent"}
 
 @router.post("/auth/login")
-@limiter.limit("5/minute")
+@limiter.limit("5/minute;20/hour")
 async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends()):
     logger.info("Login attempt", email=form_data.username, ip=request.client.host)
 
@@ -144,7 +144,7 @@ async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends
     return {"access_token": token, "token_type": "bearer"}
 
 @router.post("/auth/forgot-password")
-@limiter.limit("1/minute")
+@limiter.limit("1/minute;5/hour")
 async def request_password_reset(request: Request, payload: EmailRequest):
     email = payload.email
     logger.info("Password reset requested", email=email, ip=request.client.host)
@@ -165,7 +165,7 @@ async def request_password_reset(request: Request, payload: EmailRequest):
     return {"message": "If this email is registered and verified, a reset link has been sent."}
 
 @router.post("/auth/reset-password")
-@limiter.limit("5/minute")
+@limiter.limit("2/minute;10/hour")
 async def reset_password(payload: PasswordResetRequest, request: Request):
     logger.info("Password reset attempt", token=payload.token, ip=request.client.host)
     try:
@@ -194,7 +194,7 @@ async def reset_password(payload: PasswordResetRequest, request: Request):
 
 
 @router.get("/auth/google-login")
-@limiter.limit("5/minute")
+@limiter.limit("5/minute;15/hour")
 async def login(request: Request):
     logger.info("Google OAuth login initiated", ip=request.client.host)
     redirect_uri = os.getenv("GOOGLE_REDIRECT_URI")
@@ -202,7 +202,7 @@ async def login(request: Request):
 
 
 @router.get("/auth/callback")
-@limiter.limit("5/minute")
+@limiter.limit("5/minute;15/hour")
 async def auth_callback(request: Request):
     try:
         token = await oauth.google.authorize_access_token(request)
@@ -223,14 +223,14 @@ async def auth_callback(request: Request):
     
 
 @router.get("/me")
-@limiter.limit("10/minute")
+@limiter.limit("10/minute;60/hour")
 async def get_current_user_data(request: Request, token: str = Depends(oauth2_scheme)):
     current_user = await get_current_user(["user", "admin"], token=token)
     logger.info("Fetched current user data", user_id=current_user["id"], email=current_user["email"], ip=request.client.host)
     return current_user
 
 @router.patch("/me")
-@limiter.limit("5/minute")
+@limiter.limit("3/minute;10/hour")
 async def update_user_data(
     request: Request,
     data: UserUpdate,
@@ -263,7 +263,9 @@ async def update_user_data(
     return {"message": "Profile updated"}
 
 @router.post("/upload-profile-picture")
+@limiter.limit("3/minute;10/hour")
 async def upload_profile_picture(
+    request: Request,
     file: UploadFile = File(...),
     token: str = Depends(oauth2_scheme)
 ):

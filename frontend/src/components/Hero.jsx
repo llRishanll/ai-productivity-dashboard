@@ -8,11 +8,11 @@ export default function Hero() {
       style={{ backgroundImage: `url(${bgImage})` }}
     >
       {/* Translucent Box */}
-      <div className="bg-[#213527]/70 rounded-3xl px-5 md:px-10 py-5 md:py-12 max-w-[720px] w-full mx-auto flex flex-col items-center gap-10 z-10 text-center -translate-y-6 fade-in-group" data-stagger-delay="150">
+      <div className="bg-[#213527]/70 rounded-3xl px-5 md:px-10 py-5 md:py-12 max-w-[750px] w-full mx-auto flex flex-col items-center gap-10 z-10 text-center -translate-y-6 fade-in-group" data-stagger-delay="150">
         
         {/* Title */}
         <h1 className="fade-in-item text-5xl sm:text-6xl md:text-7xl lg:text-7xl xl:text-8xl font-bold text-yellow-700 font-josefin leading-tight">
-          AI-Powered
+          TaskMaster AI
         </h1>
 
         {/* Subtext */}

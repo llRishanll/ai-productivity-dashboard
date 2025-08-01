@@ -27,4 +27,5 @@ class TaskUpdate(BaseModel):
     due_date: Optional[date] = None
     priority: Optional[str] = None
     completed: Optional[bool] = None
+    recurring: Optional[str] = None
 
