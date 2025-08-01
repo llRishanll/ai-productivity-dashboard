@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
+import logo from "../assets/TaskMasterAI_logo.png"; 
 
 export default function Header() {
   const location = useLocation();
@@ -54,10 +55,12 @@ export default function Header() {
   };
 
   return (
-    <header className="fixed top-0 z-50 bg-[#213527] text-white w-full px-6 sm:px-10 lg:px-20 xl:px-24 py-7">
+    <header className="fixed top-0 z-50 bg-[#213527] text-white w-full px-8 sm:pr-10 lg:pr-20 xl:pr-24 py-7">
       <div className="flex items-center justify-between w-full">
-        <Link className="text-yellow-700 font-bold text-md sm:text-lg md:text-xl lg:text-xl xl:text-2xl"
-          to="/">LOGO</Link>
+        <Link className="text-yellow-700 font-inter text-md sm:text-lg md:text-xl lg:text-xl xl:text-3xl"
+          to="/">
+            TaskMaster AI
+          </Link>
 
           <nav className="hidden lg:flex space-x-8 text-lg font-inter font-light absolute left-1/2 -translate-x-1/2">
             {navLinks.map((route) => {

@@ -9,16 +9,10 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import ForgotPassword from './pages/ForgotPassword';
 import Profile from './pages/Profile';
-
 import Dashboard from './pages/dashboard/Dashboard';
 import DashboardHome from './pages/dashboard/DashboardHome';
 import Tasks from './pages/dashboard/tasks/Tasks';
-import Analytics from './pages/dashboard/tasks/Analytics';
-import Generate from './pages/dashboard/ai/Generate';
-import Prioritize from './pages/dashboard/ai/Prioritize';
-import DailyPlan from './pages/dashboard/ai/DailyPlan';
-import WeekPlan from './pages/dashboard/ai/WeekPlan';
-import Summary from './pages/dashboard/ai/Summary';
+import Planner from './pages/dashboard/planner/Planner';
 import UserManage from './pages/dashboard/admin/UserManagement';
 import AdminStats from './pages/dashboard/admin/Stats';
 import PrivacyPolicy from './pages/PrivacyPolicy';
@@ -52,14 +46,9 @@ export default function App() {
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>}>
           <Route index element={<DashboardHome />} />
           <Route path="tasks/tasks" element={<Tasks />} />
-          <Route path="tasks/analytics" element={<Analytics />} />
 
           {/* AI Tools */}
-          <Route path="ai/generate" element={<Generate />} />
-          <Route path="ai/prioritize" element={<Prioritize />} />
-          <Route path="ai/daily" element={<DailyPlan />} />
-          <Route path="ai/week" element={<WeekPlan />} />
-          <Route path="ai/summary" element={<Summary />} />
+          <Route path="planner/ai-planner" element={<Planner />} />
 
           {/* Admin */}
           <Route path="admin/users" element={<UserManage />} />

@@ -1,15 +1,10 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
+import { LayoutGroup, motion } from "framer-motion";
 import {
   Home,
   ListChecks,
-  BarChart2,
-  Brain,
   CalendarCheck,
-  ClipboardList,
   User,
-  Users,
-  LineChart,
   LogOut,
 } from "lucide-react";
 
@@ -17,41 +12,30 @@ export default function Sidebar() {
   const isAdmin = true;
 
   return (
-    <aside className="h-screen w-64 bg-[#132418]/90 text-white flex flex-col py-8 px-6 shadow-lg rounded-3xl">
-      <nav className="flex-1 space-y-2">
-        <Section title="Dashboard">
-          <NavItem to="/dashboard" icon={<Home />} label="Dashboard" />
-        </Section>
-
-        <Section title="Tasks">
-          <NavItem to="/dashboard/tasks/tasks" icon={<ListChecks />} label="All Tasks" />
-          <NavItem to="/dashboard/tasks/analytics" icon={<BarChart2 />} label="Analytics" />
-        </Section>
-
-        <Section title="AI Tools">
-          <NavItem to="/dashboard/ai/generate" icon={<Brain />} label="AI Generate" />
-          <NavItem to="/dashboard/ai/prioritize" icon={<ClipboardList />} label="AI Prioritize" />
-          <NavItem to="/dashboard/ai/daily" icon={<CalendarCheck />} label="AI Daily Plan" />
-          <NavItem to="/dashboard/ai/week" icon={<CalendarCheck />} label="AI Week Plan" />
-          <NavItem to="/dashboard/ai/summary" icon={<LineChart />} label="AI Summary" />
-        </Section>
-
-        {isAdmin && (
-          <Section title="Admin">
-            <NavItem to="/dashboard/admin/users" icon={<Users />} label="Manage Users" />
-            <NavItem to="/dashboard/admin/stats" icon={<BarChart2 />} label="Stats" />
+    <aside className="h-240 w-64 min-w-[16rem] flex-shrink-0 bg-gradient-to-b from-[#55974E66] via-[#20432abd] to-[#213527BD] text-white flex flex-col justify-between px-6 py-6 rounded-3xl shadow-lg mt-6 ml-2 mb-6">
+      <LayoutGroup>
+        <nav className="space-y-6">
+          <Section title="">
+            <NavItem to="/dashboard" icon={<Home />} label="Dashboard" />
           </Section>
-        )}
 
-        <Section title="Account">
-          <NavItem to="/profile" icon={<User />} label="Profile" />
-          <NavItem to="/logout" icon={<LogOut />} label="Logout" />
-        </Section>
-      </nav>
+          <Section title="Tasks">
+            <NavItem to="/dashboard/tasks/tasks" icon={<ListChecks />} label="Tasks" />
+          </Section>
 
-      <div className="mt-auto text-sm text-white/50 pt-6 border-t border-white/10">
-        2025 © TaskMaster AI
-      </div>
+          <Section title="Planner">
+            <NavItem to="/dashboard/planner/ai-planner" icon={<CalendarCheck />} label="AI Planner" />
+          </Section>
+
+          <Section title="My Account">
+            <NavItem to="/profile" icon={<User />} label="Profile Settings" />
+            <NavItem to="/logout" icon={<LogOut />} label="Sign Out" />
+          </Section>
+        </nav>
+      </LayoutGroup>
+
+      {/* Footer */}
+      <p className="text-xs text-white/30 text-center">2025 © TaskMaster AI</p>
     </aside>
   );
 }
@@ -64,19 +48,27 @@ function NavItem({ to, icon, label }) {
     <div className="relative">
       {isActive && (
         <motion.div
-          layoutId="active-pill"
-          className="absolute inset-0 rounded-lg bg-[#213527]"
+          layoutId="active-tile"
+          className="absolute inset-0 bg-[#213527] rounded-xl z-0"
           transition={{ type: "spring", stiffness: 500, damping: 30 }}
         />
       )}
       <NavLink
         to={to}
-        className={`relative z-10 flex items-center gap-4 px-4 py-3 rounded-lg transition ${
-          isActive ? "text-yellow-700" : "text-white/80 hover:bg-[#213527]"
+        className={`relative z-10 flex items-center gap-4 px-4 py-3 rounded-xl transition group ${
+          isActive
+            ? "text-yellow-700 font-semibold"
+            : "text-white/80 hover:bg-[#1e3224]"
         }`}
       >
-        <div className="w-5 h-5">{icon}</div>
-        <span className="font-inter text-lg">{label}</span>
+        <div
+          className={`w-8 h-8 rounded-xl flex items-center justify-center transition ${
+            isActive ? "bg-white text-yellow-700" : "bg-yellow-700 text-white"
+          }`}
+        >
+          {icon}
+        </div>
+        <span className="text-md">{label}</span>
       </NavLink>
     </div>
   );
@@ -84,10 +76,12 @@ function NavItem({ to, icon, label }) {
 
 function Section({ title, children }) {
   return (
-    <div className="mb-4">
-      <h3 className="text-sm text-white/50 mb-1 font-semibold uppercase tracking-wide">
-        {title}
-      </h3>
+    <div>
+      {title && (
+        <h3 className="text-xs text-white/40 mb-2 font-semibold uppercase tracking-wider">
+          {title}
+        </h3>
+      )}
       <div className="space-y-1">{children}</div>
     </div>
   );

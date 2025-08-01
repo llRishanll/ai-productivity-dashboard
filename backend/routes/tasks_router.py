@@ -12,7 +12,7 @@ from logging_config import logger
 router = APIRouter()
 
 @router.post("/tasks", response_model=TaskOut)
-@limiter.limit("10/minute")
+@limiter.limit("10/minute;50/hour")
 async def add_task(request: Request, task: TaskIn, token: str = Depends(oauth2_scheme)):
     user = await get_current_user(["user", "admin"], token=token)
     if not user:
@@ -27,7 +27,7 @@ async def add_task(request: Request, task: TaskIn, token: str = Depends(oauth2_s
 
 
 @router.delete("/tasks/delete-completed")
-@limiter.limit("5/minute")
+@limiter.limit("5/minute;20/hour")
 async def delete_completed_tasks(request: Request, token: str = Depends(oauth2_scheme)):
     user = await get_current_user(["user", "admin"], token=token)
     
@@ -47,7 +47,7 @@ async def delete_completed_tasks(request: Request, token: str = Depends(oauth2_s
 
 
 @router.get("/tasks", response_model=dict)
-@limiter.limit("20/minute")
+@limiter.limit("60/minute;300/hour")
 async def read_tasks(
     request: Request,
     completed: bool | None = Query(None),
@@ -57,7 +57,7 @@ async def read_tasks(
     search: str | None = Query(None),
     limit: int = Query(10, ge=1),
     offset: int = Query(0, ge=0),
-    token: str = Depends(oauth2_scheme)
+    token: str = Depends(oauth2_scheme),
 ):
     user = await get_current_user(["user", "admin"], token=token)
 
@@ -71,8 +71,10 @@ async def read_tasks(
         "offset": offset
     })
 
+    # Base user filter
     base_query = tasks.select().where(tasks.c.user_id == user["id"])
 
+    # Optional filters
     if completed is not None:
         base_query = base_query.where(tasks.c.completed == completed)
 
@@ -87,15 +89,24 @@ async def read_tasks(
             )
         )
 
-    if sort_by:
-        sort_column = tasks.c.due_date if sort_by == "due_date" else tasks.c.priority
-        base_query = base_query.order_by(asc(sort_column) if order == "asc" else desc(sort_column))
+    # Sorting logic
+    sort_column_map = {
+        "due_date": tasks.c.due_date,
+        "priority": tasks.c.priority,
+        "created_at": tasks.c.created_at
+    }
 
+    sort_column = sort_column_map.get(sort_by, tasks.c.created_at)  # Default to created_at
+    base_query = base_query.order_by(asc(sort_column) if order == "asc" else desc(sort_column))
+
+    # Pagination
     paginated_query = base_query.limit(limit).offset(offset)
 
+    # Count total after filters (before pagination)
     total_query = select(func.count()).select_from(base_query.alias("filtered_tasks"))
     total_count = await database.fetch_val(total_query)
 
+    # Fetch tasks
     results = await database.fetch_all(paginated_query)
     task_list = [dict(r) for r in results]
 
@@ -110,7 +121,7 @@ async def read_tasks(
 
 
 @router.patch("/tasks/{task_id}", response_model=TaskOut)
-@limiter.limit("10/minute")
+@limiter.limit("10/minute;50/hour")
 async def patch_task(request: Request, task_id: int, task: TaskUpdate, token: str = Depends(oauth2_scheme)):
     user = await get_current_user(["user", "admin"], token=token)
     if not user:
@@ -133,7 +144,7 @@ async def patch_task(request: Request, task_id: int, task: TaskUpdate, token: st
 
 
 @router.delete("/tasks/{task_id}")
-@limiter.limit("10/minute")
+@limiter.limit("10/minute;50/hour")
 async def delete_task_route(request: Request, task_id: int, token: str = Depends(oauth2_scheme)):
     user = await get_current_user(["user", "admin"], token=token)
     if not user:
@@ -151,7 +162,7 @@ async def delete_task_route(request: Request, task_id: int, token: str = Depends
 
 
 @router.get("/tasks/analytics")
-@limiter.limit("10/minute")
+@limiter.limit("10/minute;60/hour")
 async def task_analytics(request: Request, token: str = Depends(oauth2_scheme)):
     user = await get_current_user(["user", "admin"], token=token)
     if not user:

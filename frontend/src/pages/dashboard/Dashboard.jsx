@@ -21,10 +21,10 @@ export default function Dashboard() {
       transition={{ duration: 0.5}}
     >
     <Header />
-    <div className="flex-1 flex flex-col pt-[5rem] md:pt-[5.5rem]">
-      <div className="flex min-h-screen bg-[#1e3226] text-white">
+    <div className="flex-1 flex flex-col pt-[5rem] md:pt-[5.25rem] xl:pt-[5.75rem]">
+      <div className="flex min-h-screen bg-gradient-to-br from-[#213527BD] via-[#20432abd] to-[#55974E66] text-white">
         <Sidebar />
-        <div className="p-8">
+        <div className="flex-1 p-8 w-full">
           <Outlet /> {/* ✅ This renders the selected nested route */}
         </div>
       </div>
