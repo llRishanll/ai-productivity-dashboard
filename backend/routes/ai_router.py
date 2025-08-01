@@ -13,7 +13,7 @@ from logging_config import logger
 router = APIRouter()
 
 @router.post("/tasks/ai-generate", response_model=TaskOut)
-@limiter.limit("3/minute;10/hour")
+@limiter.limit("6/minute;30/hour")
 async def ai_generate_task(request: Request, token: str = Depends(oauth2_scheme), prompt: str = Body(...)):
     user = await get_current_user(["user", "admin"], token=token)
     if not user:
@@ -35,7 +35,7 @@ async def ai_generate_task(request: Request, token: str = Depends(oauth2_scheme)
 
 
 @router.get("/tasks/ai-prioritize")
-@limiter.limit("2/minute;5/hour")
+@limiter.limit("3/minute;10/hour")
 async def ai_prioritize(request: Request, token: str = Depends(oauth2_scheme)):
     user = await get_current_user(["user", "admin"], token=token)
     if not user:
@@ -60,7 +60,7 @@ async def ai_prioritize(request: Request, token: str = Depends(oauth2_scheme)):
 
 
 @router.get("/tasks/ai-daily-plan")
-@limiter.limit("2/minute;5/hour")
+@limiter.limit("3/minute;10/hour")
 async def ai_daily_plan(request: Request, token: str = Depends(oauth2_scheme)):
     user = await get_current_user(["user", "admin"], token=token)
     if not user:
@@ -85,7 +85,7 @@ async def ai_daily_plan(request: Request, token: str = Depends(oauth2_scheme)):
 
 
 @router.get("/tasks/ai-summary")
-@limiter.limit("2/minute;5/hour")
+@limiter.limit("5/minute;30/hour")
 async def ai_summary(request: Request, token: str = Depends(oauth2_scheme)):
     user = await get_current_user(["user", "admin"], token=token)
     if not user:

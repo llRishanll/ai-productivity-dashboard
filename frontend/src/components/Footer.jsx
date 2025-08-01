@@ -5,7 +5,7 @@ export default function Footer() {
 
         {/* Left Column */}
         <div className="max-w-100">
-          <h2 className="text-yellow-700 text-[1.1rem] md:text-2xl font-inter font-bold mb-4">LOGO</h2>
+          <h2 className="text-yellow-700 text-[1.1rem] md:text-3xl font-inter mb-4">TaskMaster AI</h2>
           <p className="text-white/90 font-inter font-light text-[1.1rem] md:text-xl mb-6">
             Intelligent task management powered by AI to help you achieve more with less effort.
           </p>
