@@ -43,7 +43,7 @@ export default function Tasks() {
       <div className="fade-in-group space-y-6" data-stagger-delay="100">
         <AIGenerateTask onTaskAdded={() => setRefreshTrigger((prev) => prev + 1)} />
         <TaskListSection refreshTrigger={refreshTrigger} />
-        <AIPrioritizedPlan />
+        <AIPrioritizedPlan onReprioritized={() => setRefreshTrigger((prev) => prev + 1)} />
       </div>
     </motion.div>
   );

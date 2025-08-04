@@ -74,7 +74,7 @@ export default function AIGenerateTask({ onTaskAdded }) {
         <button
           onClick={handleGenerate}
           disabled={loading}
-          className="bg-yellow-700 hover:bg-yellow-800 text-white px-4 py-2 rounded-xl transition flex items-center gap-2 font-inter text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-yellow-700 hover:bg-yellow-800 text-white px-4 py-2 rounded-xl transition flex items-center gap-2 font-inter text-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? (
             <>

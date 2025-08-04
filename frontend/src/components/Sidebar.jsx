@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { LayoutGroup, motion } from "framer-motion";
 import {
   Home,
@@ -29,20 +29,28 @@ export default function Sidebar() {
 
           <Section title="My Account">
             <NavItem to="/profile" icon={<User />} label="Profile Settings" />
-            <NavItem to="/logout" icon={<LogOut />} label="Sign Out" />
+            <NavItem to="/logout" icon={<LogOut />} label="Sign Out" isLogout />
           </Section>
         </nav>
       </LayoutGroup>
 
-      {/* Footer */}
       <p className="text-xs text-white/30 text-center">2025 © TaskMaster AI</p>
     </aside>
   );
 }
 
-function NavItem({ to, icon, label }) {
+function NavItem({ to, icon, label, isLogout = false }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const isActive = location.pathname === to;
+
+  const handleClick = (e) => {
+    if (isLogout) {
+      e.preventDefault();
+      localStorage.removeItem("token");
+      navigate("/"); // Redirect to landing/login page
+    }
+  };
 
   return (
     <div className="relative">
@@ -55,6 +63,7 @@ function NavItem({ to, icon, label }) {
       )}
       <NavLink
         to={to}
+        onClick={handleClick}
         className={`relative z-10 flex items-center gap-4 px-4 py-3 rounded-xl transition group ${
           isActive
             ? "text-yellow-700 font-semibold"

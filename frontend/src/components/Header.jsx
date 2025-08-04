@@ -1,6 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import logo from "../assets/TaskMasterAI_logo.png"; 
 
 export default function Header() {
   const location = useLocation();
