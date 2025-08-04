@@ -3,7 +3,7 @@ from utils.security import oauth2_scheme,get_current_user
 from schemas.task_schema import TaskIn, TaskOut
 from crud.task_crud import update_task, delete_task, create_task, get_task_analytics
 from schemas.task_schema import TaskUpdate
-from sqlalchemy import desc, asc, or_ ,select, func
+from sqlalchemy import desc, asc, or_ ,select, func, case, literal_column
 from models.task import tasks
 from database import database
 from main import limiter
@@ -71,43 +71,56 @@ async def read_tasks(
         "offset": offset
     })
 
-    # Base user filter
-    base_query = tasks.select().where(tasks.c.user_id == user["id"])
-
-    # Optional filters
+    user_id = user["id"]
+    
+    # Build the base WHERE clause and parameters
+    where_parts = ["user_id = :user_id"]
+    params = {"user_id": user_id}
+    
     if completed is not None:
-        base_query = base_query.where(tasks.c.completed == completed)
-
+        where_parts.append("completed = :completed")
+        params["completed"] = completed
+        
     if priority:
-        base_query = base_query.where(tasks.c.priority == priority)
-
+        where_parts.append("priority = :priority")
+        params["priority"] = priority
+        
     if search:
-        base_query = base_query.where(
-            or_(
-                tasks.c.title.ilike(f"%{search}%"),
-                tasks.c.description.ilike(f"%{search}%")
-            )
-        )
+        where_parts.append("(title ILIKE :search OR description ILIKE :search)")
+        params["search"] = f"%{search}%"
 
-    # Sorting logic
-    sort_column_map = {
-        "due_date": tasks.c.due_date,
-        "priority": tasks.c.priority,
-        "created_at": tasks.c.created_at
-    }
+    where_clause = " AND ".join(where_parts)
+    
+    # Build ORDER BY
+    if sort_by == "priority":
+        order_clause = f"""ORDER BY CASE 
+            WHEN priority = 'High' THEN 1
+            WHEN priority = 'Medium' THEN 2
+            WHEN priority = 'Low' THEN 3
+            ELSE 4
+        END {order.upper()}"""
+    else:
+        column = "created_at"
+        if sort_by in ["due_date", "created_at"]:
+            column = sort_by
+        order_clause = f"ORDER BY {column} {order.upper()}"
 
-    sort_column = sort_column_map.get(sort_by, tasks.c.created_at)  # Default to created_at
-    base_query = base_query.order_by(asc(sort_column) if order == "asc" else desc(sort_column))
-
-    # Pagination
-    paginated_query = base_query.limit(limit).offset(offset)
-
-    # Count total after filters (before pagination)
-    total_query = select(func.count()).select_from(base_query.alias("filtered_tasks"))
-    total_count = await database.fetch_val(total_query)
-
-    # Fetch tasks
-    results = await database.fetch_all(paginated_query)
+    # Execute count query
+    count_sql = f"SELECT COUNT(*) FROM tasks WHERE {where_clause}"
+    total_count = await database.fetch_val(count_sql, params)
+    
+    # Execute data query
+    data_sql = f"""
+        SELECT id, title, description, completed, user_id, due_date, priority, 
+               recurring, recurring_until, calendar_event_id, created_at, updated_at
+        FROM tasks 
+        WHERE {where_clause}
+        {order_clause}
+        LIMIT :limit OFFSET :offset
+    """
+    
+    params.update({"limit": limit, "offset": offset})
+    results = await database.fetch_all(data_sql, params)
     task_list = [dict(r) for r in results]
 
     logger.info("Tasks fetched", user_id=user["id"], total=total_count, returned=len(task_list))
