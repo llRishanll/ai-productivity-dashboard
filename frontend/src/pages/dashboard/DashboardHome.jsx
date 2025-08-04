@@ -10,10 +10,14 @@ import TaskTable from "../../components/dashboard/TaskTable";
 
 export default function DashboardHome() {
   const [tasks, setTasks] = useState([]);
+  const [user, setUser] = useState(null);
+  const [summary, setSummary] = useState("");
 
   useEffect(() => {
     initFadeInOnScroll();
-    fetchTasks(); // Initial load
+    fetchTasks();
+    fetchUser();
+    fetchSummary();
   }, []);
 
   const fetchTasks = async () => {
@@ -32,6 +36,38 @@ export default function DashboardHome() {
     }
   };
 
+  const fetchUser = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/me`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data);
+      }
+    } catch (err) {
+      console.error("Error fetching user", err);
+    }
+  };
+
+  const fetchSummary = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/tasks/ai-summary`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSummary(data.summary || "");
+      }
+    } catch (err) {
+      console.error("Error fetching AI summary", err);
+    }
+  };
+
   return (
     <motion.div
       className="p-6 text-white space-y-6 mt-2"
@@ -45,10 +81,15 @@ export default function DashboardHome() {
 
         <div className="flex flex-col md:flex-row gap-6 items-stretch fade-in-item">
           <div className="flex-1 fade-in-item">
-            <Welcome />
+            <Welcome user={user} summary={summary} />
           </div>
           <div className="w-full md:w-1/4 fade-in-item">
-            <QuickAdd onTaskAdded={fetchTasks} />
+            <QuickAdd
+              onTaskAdded={() => {
+                fetchTasks();
+                fetchSummary(); // ✅ refresh summary too
+              }}
+            />
           </div>
           <div className="w-full md:w-1/4 fade-in-item">
             <Progress />
