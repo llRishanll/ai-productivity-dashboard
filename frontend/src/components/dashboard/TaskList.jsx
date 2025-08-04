@@ -6,8 +6,9 @@ import { CheckCircle, Pencil, Trash2, ArrowDownWideNarrow, ChevronLeft, ChevronR
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
-export default function Tasks() {
+export default function Tasks({ refreshTrigger }) {
   const [tasks, setTasks] = useState([]);
+  const [totalTasks, setTotalTasks] = useState(0);
   const [filter, setFilter] = useState("");
   const [sort, setSort] = useState("created_at");
   const [order, setOrder] = useState("desc");
@@ -37,7 +38,7 @@ export default function Tasks() {
 
   useEffect(() => {
     fetchTasks();
-  }, [filter, sort, order, page, limit, debouncedSearch]);
+  }, [filter, sort, order, page, limit, debouncedSearch, refreshTrigger]);
 
   const [newTask, setNewTask] = useState({
     title: "",
@@ -80,6 +81,7 @@ export default function Tasks() {
       if (res.ok) {
         const data = await res.json();
         setTasks(data.tasks);
+        setTotalTasks(data.total_tasks);
       }
     } catch (err) {
       console.error("Failed to fetch tasks:", err);
@@ -265,7 +267,7 @@ export default function Tasks() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-4 items-center py-3 rounded-xl shadow-sm w-fit">
+          <div className="flex flex-wrap gap-4 items-center py-3 rounded-xl w-fit">
             {/* Search Input */}
             <div className="relative w-full sm:w-auto">
               <input
@@ -423,7 +425,8 @@ export default function Tasks() {
               <span className="px-4 py-2 bg-[#1e4429] rounded-xl text-white/90">Page: {page}</span>
               <button
                 onClick={() => setPage((prev) => prev + 1)}
-                className="flex items-center gap-1 px-4 py-2 bg-[#2e4736] rounded-xl hover:bg-[#365c42] transition cursor-pointer"
+                disabled={page * limit >= totalTasks}
+                className="flex items-center gap-1 px-4 py-2 bg-[#2e4736] rounded-xl hover:bg-[#365c42] transition disabled:opacity-40 cursor-pointer"
               >
                 Next <ChevronRight size={16} />
               </button>
