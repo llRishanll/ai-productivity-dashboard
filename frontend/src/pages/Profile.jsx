@@ -136,7 +136,7 @@ export default function Profile() {
                   <img
                     src={`${import.meta.env.VITE_API_URL}${user.picture}`}
                     alt="Profile"
-                    className="w-42 h-42 rounded-full object-cover border-3 border-yellow-700 shadow-md transition-opacity duration-300"
+                    className="w-42 h-42 rounded-full object-cover border-3 border-yellow-700 shadow-md transition-opacity duration-300 flex items-center justify-center text-center"
                   />
 
                   {/* hover overlay */}
