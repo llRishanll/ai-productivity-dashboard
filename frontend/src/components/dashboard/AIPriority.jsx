@@ -85,7 +85,7 @@ export default function AIPrioritizedPlan({ onReprioritized }) {
   return (
     <div className="bg-gradient-to-br from-[#213527BD] via-[#20432abd] to-[#55974E66] rounded-2xl p-6 shadow-lg w-full min-h-[160px]">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold text-yellow-700 font-josefin flex items-center gap-2">
+        <h2 className="text-3xl font-bold text-yellow-700 font-josefin flex items-center gap-2">
           AI Prioritize Tasks
           <div className="relative group cursor-pointer">
             <Info size={18} className="text-white/70 hover:text-yellow-700 transition" />

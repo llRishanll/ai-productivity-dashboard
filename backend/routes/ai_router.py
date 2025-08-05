@@ -111,7 +111,7 @@ async def ai_summary(request: Request, token: str = Depends(oauth2_scheme)):
 
 
 @router.get("/tasks/ai-week-plan")
-@limiter.limit("2/minute;5/hour")
+@limiter.limit("3/minute;10/hour")
 async def ai_week_plan(request: Request, token: str = Depends(oauth2_scheme)):
     user = await get_current_user(["user", "admin"], token=token)
     if not user:

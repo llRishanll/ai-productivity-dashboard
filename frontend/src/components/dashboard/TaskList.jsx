@@ -245,7 +245,7 @@ export default function Tasks({ refreshTrigger }) {
       <div className="fade-in-group space-y-6" data-stagger-delay="100">
         {/* Task List Section */}
         <div className="fade-in-item bg-gradient-to-br from-[#213527BD] via-[#20432abd] to-[#55974E66] rounded-2xl p-6 shadow-lg min-h-[300px] relative">
-          <div className="flex justify-between items-start mb-4">
+          <div className="fade-in-item flex justify-between items-start mb-4">
             <h2 className="text-3xl font-bold text-yellow-700 font-josefin">Tasks</h2>
             <div className="flex gap-3">
               <button
@@ -267,7 +267,7 @@ export default function Tasks({ refreshTrigger }) {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-4 items-center py-3 rounded-xl w-fit">
+          <div className="fade-in-item flex flex-wrap gap-4 items-center py-3 rounded-xl w-fit">
             {/* Search Input */}
             <div className="relative w-full sm:w-auto">
               <input
@@ -354,7 +354,7 @@ export default function Tasks({ refreshTrigger }) {
 
 
           {/* Task Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 pt-4 space-y-2">
+          <div className="fade-in-item grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 pt-4 space-y-2">
             {tasks.map((task) => (
               <div key={task.id} className="bg-gradient-to-br from-[#1e4429bd] via-[#20432abd] to-[#55974E66] p-4 rounded-xl shadow-md flex flex-col justify-between">
                 <div>
