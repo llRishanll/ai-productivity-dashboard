@@ -49,7 +49,7 @@ export default function AIGenerateTask({ onTaskAdded }) {
   };
 
   return (
-    <div className="bg-gradient-to-br from-[#213527BD] via-[#20432abd] to-[#55974E66] rounded-2xl p-6 shadow-lg w-full min-h-[180px]">
+    <div className="fade-in-item bg-gradient-to-br from-[#213527BD] via-[#20432abd] to-[#55974E66] rounded-2xl p-6 shadow-lg w-full min-h-[180px]">
       <div className="flex items-center justify-center gap-2 mb-4">
         <h2 className="text-3xl font-bold text-yellow-700 font-josefin text-center">
           AI Generate Task
@@ -62,19 +62,19 @@ export default function AIGenerateTask({ onTaskAdded }) {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row justify-center items-center gap-3 mt-6">
+      <div className="fade-in-group flex flex-col sm:flex-row justify-center items-center gap-3 mt-6">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Describe your task..."
-          className="w-full bg-[#2e4736] text-white px-4 py-3 rounded-xl placeholder-white/50 font-inter text-sm focus:outline-none focus:ring-2 focus:ring-yellow-700 transition"
+          className="fade-in-item w-full bg-[#2e4736] text-white px-4 py-3 rounded-xl placeholder-white/50 font-inter text-sm focus:outline-none focus:ring-2 focus:ring-yellow-700 transition"
         />
 
         <button
           onClick={handleGenerate}
           disabled={loading}
-          className="bg-yellow-700 hover:bg-yellow-800 text-white px-4 py-2 rounded-xl transition flex items-center gap-2 font-inter text-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          className="fade-in-item bg-yellow-700 hover:bg-yellow-800 text-white px-4 py-2 rounded-xl transition flex items-center gap-2 font-inter text-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? (
             <>
