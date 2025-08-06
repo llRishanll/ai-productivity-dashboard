@@ -31,7 +31,7 @@ export default function CallToAction() {
 
       {/* Subtext */}
       <p className="fade-in-item text-white/80 text-[1.1rem] md:text-2xl max-w-4xl">
-        Experience the power of AI-driven task management with our 14-day free trial.
+        Experience the power of AI-driven task management with our Beta free trial.
         <br />
         No credit card required.
       </p>
@@ -59,7 +59,7 @@ export default function CallToAction() {
       {/* Terms Text */}
       <p className="fade-in-item text-white/40 text-xs md:text-lg mt-[-1rem]">
         By signing up, you agree to our{" "}
-        <span className="text-yellow-700 hover:underline cursor-pointer">Terms</span>{" "}
+        <span className="text-yellow-700 hover:underline cursor-pointer"><a href="/privacy-policy">Terms</a></span>{" "}
         and{" "}
         <span className="text-yellow-700 hover:underline cursor-pointer"><a href="/privacy-policy">Privacy Policy</a></span>.
       </p>

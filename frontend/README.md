@@ -3,7 +3,7 @@
 This is the React + Tailwind frontend for **TaskMaster AI**, a full-stack AI-powered productivity platform. It communicates with the FastAPI backend and displays your tasks, plans, and AI-generated insights in a clean dashboard.
 
 🔗 **Live Site:** [taskmaster-ai.com](https://taskmaster-ai.com)  
-📦 **Backend Repo:** [github.com/llRishanll/taskmaster-ai](https://github.com/llRishanll/taskmaster-ai)
+📦 **Backend Repo:** [github.com/llRishanll/ai-productivity-dashboard](https://github.com/llRishanll/ai-productivity-dashboard)
 
 ---
 

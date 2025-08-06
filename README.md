@@ -3,7 +3,7 @@
 **An AI-powered productivity dashboard that intelligently generates, organizes, prioritizes, and schedules your tasks — built with FastAPI, React, OpenAI, and deployed on AWS.**
 
 🔗 **Live Demo:** [taskmaster-ai.com](https://taskmaster-ai.com)  
-📂 **Backend Code:** [github.com/llRishanll/taskmaster-ai](https://github.com/llRishanll/taskmaster-ai)  
+📂 **Backend Code:** [github.com/llRishanll/ai-productivity-dashboard](https://github.com/llRishanll/ai-productivity-dashboard)  
 🎥 **Demo Video/GIF:** *(Coming soon — add GIF or Loom video here)*
 
 ---

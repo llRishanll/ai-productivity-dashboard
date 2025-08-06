@@ -76,8 +76,6 @@ export default function Footer() {
         <p>© 2025 TaskMaster AI. All rights reserved.</p>
         <div className="flex gap-6">
           <a href="/privacy-policy" className="hover:text-yellow-700">Privacy Policy</a>
-          <a href="#" className="hover:text-yellow-700">Terms of Service</a>
-          <a href="#" className="hover:text-yellow-700">Cookies</a>
         </div>
       </div>
     </footer>

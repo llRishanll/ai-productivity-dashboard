@@ -41,22 +41,22 @@ export default function Stats() {
         {/* Stat 3 */}
         <div className="fade-in-item flex flex-col items-center md:items-start md:ml-10">
           <h3 className="text-4xl md:text-7xl font-bold font-inter text-white">
-            250<span className="text-yellow-700">K+</span>
+            100<span className="text-yellow-700">+</span>
           </h3>
           <div className="w-28 h-0.75 mt-6 mb-2 bg-white/90 mx-auto md:mx-0" />
           <p className="text-white/90 text-xl md:text-[1.65rem] leading-tight font-inter font-light">
-            Active<br />users
+            Test<br />users
           </p>
         </div>
 
         {/* Stat 4 */}
         <div className="fade-in-item flex flex-col items-center md:items-start">
           <h3 className="text-4xl md:text-7xl font-bold font-inter text-white">
-            4.8<span className="text-yellow-700">+</span>
+            4.3<span className="text-yellow-700">+</span>
           </h3>
           <div className="w-28 h-0.75 mt-6 mb-2 bg-white/90 mx-auto md:mx-0" />
           <p className="text-white/90 text-xl md:text-[1.65rem] leading-tight font-inter font-light">
-            App Store<br />rating
+            User<br />ratings
           </p>
         </div>
       </div>
