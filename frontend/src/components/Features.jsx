@@ -31,11 +31,12 @@ export default function Features() {
           <div className="space-y-6 pt-4 fade-in-group" data-stagger-delay="150">
             {/* Card 1 */}
             <div className="fade-in-item">
-              <div className="group flex items-center gap-4 md:p-4 rounded-xl transition duration-300 hover:scale-105 hover:bg-[#253d2a] hover:shadow-xl">
-                <div className="text-yellow-700 text-xl flex items-center justify-center w-11 h-11 md:w-13 md:h-13 p-1 md:p-2 rounded-full bg-white/15">
-                  {/* icon */}
-                  <svg width={40} height={40} viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M4 22v-5.925q0-.5.238-.95T4.9 14.4l1.1-.725q.175 2.1.55 3.575t1.175 3.275zm5.225-2q-.875-1.65-1.3-3.5T7.5 12.675q0-3.125 1.238-5.887T12 2.6q2.025 1.425 3.263 4.188t1.237 5.887q0 1.95-.425 3.788T14.775 20zM12 13q.825 0 1.413-.587T14 11t-.587-1.412T12 9t-1.412.588T10 11t.588 1.413T12 13m8 9l-3.725-1.475q.8-1.8 1.175-3.275t.55-3.575l1.1.725q.425.275.663.725t.237.95z"></path>
+              <Link to="/dashboard/tasks/tasks" className="group">
+                <div className="group flex items-center gap-4 md:p-4 rounded-xl transition duration-300 hover:scale-105 hover:bg-[#253d2a] hover:shadow-xl">
+                  <div className="text-yellow-700 text-xl flex items-center justify-center w-11 h-11 md:w-13 md:h-13 p-1 md:p-2 rounded-full bg-white/15">
+                    {/* icon */}
+                    <svg width={40} height={40} viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M4 22v-5.925q0-.5.238-.95T4.9 14.4l1.1-.725q.175 2.1.55 3.575t1.175 3.275zm5.225-2q-.875-1.65-1.3-3.5T7.5 12.675q0-3.125 1.238-5.887T12 2.6q2.025 1.425 3.263 4.188t1.237 5.887q0 1.95-.425 3.788T14.775 20zM12 13q.825 0 1.413-.587T14 11t-.587-1.412T12 9t-1.412.588T10 11t.588 1.413T12 13m8 9l-3.725-1.475q.8-1.8 1.175-3.275t.55-3.575l1.1.725q.425.275.663.725t.237.95z"></path>
                   </svg>
                 </div>
                 <div>
@@ -47,15 +48,26 @@ export default function Features() {
                   </p>
                 </div>
               </div>
+              </Link>
             </div>
 
             {/* Card 2 */}
             <div className="fade-in-item">
-              <div className="group flex flex-row-reverse md:flex-row items-center gap-4 p-4 rounded-xl transition duration-300 hover:scale-105 hover:bg-[#253d2a] hover:shadow-xl">
-                <div className="text-yellow-700 text-xl flex items-center justify-center w-11 h-11 md:w-13 md:h-13 p-1 md:p-2 rounded-full bg-white/15">
-                  {/* icon */}
-                  <svg width={40} height={40} viewBox="0 0 48 48" fill="currentColor">
-                    <defs><mask id="ipSSchedule0"><g fill="none" strokeLinecap="round" strokeWidth={4}><rect width={32} height={30} x={8} y={10} fill="#fff" stroke="#fff" strokeLinejoin="round" rx={2}></rect><path stroke="#fff" d="M14 6v8"></path><path stroke="#000" d="M25 23H14m20 8H14"></path><path stroke="#fff" d="M34 6v8"></path></g></mask></defs>
+              <Link to="/dashboard/planner/ai-planner" className="group">
+                <div className="group flex flex-row-reverse md:flex-row items-center gap-4 p-4 rounded-xl transition duration-300 hover:scale-105 hover:bg-[#253d2a] hover:shadow-xl">
+                  <div className="text-yellow-700 text-xl flex items-center justify-center w-11 h-11 md:w-13 md:h-13 p-1 md:p-2 rounded-full bg-white/15">
+                    {/* icon */}
+                    <svg width={40} height={40} viewBox="0 0 48 48" fill="currentColor">
+                      <defs>
+                        <mask id="ipSSchedule0">
+                          <g fill="none" strokeLinecap="round" strokeWidth={4}>
+                            <rect width={32} height={30} x={8} y={10} fill="#fff" stroke="#fff" strokeLinejoin="round" rx={2}></rect>
+                            <path stroke="#fff" d="M14 6v8"></path>
+                            <path stroke="#000" d="M25 23H14m20 8H14"></path>
+                            <path stroke="#fff" d="M34 6v8"></path>
+                          </g>
+                        </mask>
+                      </defs>
                     <path d="M0 0h48v48H0z" mask="url(#ipSSchedule0)"></path>
                   </svg>
                 </div>
@@ -68,10 +80,12 @@ export default function Features() {
                   </p>
                 </div>
               </div>
+              </Link>
             </div>
 
             {/* Card 3 */}
             <div className="fade-in-item">
+              <Link to="/dashboard" className="group">
               <div className="group flex items-center gap-4 p-4 rounded-xl transition duration-300 hover:scale-105 hover:bg-[#253d2a] hover:shadow-xl">
                 <div className="text-yellow-700 text-xl flex items-center justify-center w-11 h-11 md:w-13 md:h-13 p-1 md:p-2 rounded-full bg-white/15">
                   <svg width={35} height={35} viewBox="0 0 24 24" fill="currentColor">
@@ -87,6 +101,7 @@ export default function Features() {
                   </p>
                 </div>
               </div>
+              </Link>
             </div>
           </div>
         </div>
